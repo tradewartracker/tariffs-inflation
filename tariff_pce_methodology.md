@@ -74,9 +74,9 @@ The result $\hat{P}_k$ is the **predicted percent increase in the price of PCE c
 
 ## Worked Example: New Motor Vehicles
 
-To make the methodology concrete, we trace through the full chain for the "New motor vehicles" PCE category using 2022 BEA data and Census tariff data comparing July 2025 to the 2024 annual baseline.
+To make the methodology concrete, we trace through the full chain for the "New motor vehicles" PCE category using 2022 BEA data and Census tariff data comparing December 2025 to the 2024 annual baseline.
 
-**Setup:** The new motor vehicles PCE category maps to a single BEA commodity — `3361MV` (Motor vehicles, bodies and trailers, and parts). The **change** in the effective tariff rate on this commodity from the 2024 baseline to July 2025, constructed from Census duties/imports data aggregated via our NAICS6 → BEA concordance, is **18.3 percentage points**. This is the increase in the import-weighted average tariff actually collected at the border — lower than the statutory 25% increase because not all motor vehicle imports face the full rate due to exemptions, country-specific rates, and product mix.
+**Setup:** The new motor vehicles PCE category maps to a single BEA commodity — `3361MV` (Motor vehicles, bodies and trailers, and parts). The **change** in the effective tariff rate on this commodity from the 2024 baseline to December 2025, constructed from Census duties/imports data aggregated via our NAICS6 → BEA concordance, is **12.5 percentage points**. This is the increase in the import-weighted average tariff actually collected at the border — lower than the statutory 25% increase because not all motor vehicle imports face the full rate due to exemptions, country-specific rates, and product mix.
 
 **Step 1 — Direct import share: 33.8%**
 Of the total domestic supply of motor vehicles, 33.8% comes directly from imports. Roughly one in three dollars of motor vehicle supply at the border is foreign-made.
@@ -84,10 +84,10 @@ Of the total domestic supply of motor vehicles, 33.8% comes directly from import
 **Step 2 & 3 — Total import content after Leontief: 80.4%**
 After tracing all upstream supply chain inputs — steel, aluminum, electronics, rubber, chemicals that go into making cars domestically — the total import content rises from 33.8% to 80.4%. This is the Leontief amplification: even "domestic" cars are heavily import-dependent through their inputs. The gap between 33.8% and 80.4% represents the indirect import content embedded in domestically produced components.
 
-**Step 4 — Predicted tariff effect at producer level: 12.4%**
-The predicted price increase per dollar of motor vehicle output is 12.4%. This is not simply $80.4\% \times 18.3\%$ — it reflects the full Leontief propagation of tariff-weighted import shares across all upstream commodities, each with their own tariff rate and import share. Steel, rubber, and electronics inputs all face their own tariffs, and those costs propagate forward into the vehicle price.
+**Step 4 — Predicted tariff effect at producer level: 9.3%**
+The predicted price increase per dollar of motor vehicle output is 9.3%. This is not simply $80.4\% \times 12.5\%$ — it reflects the full Leontief propagation of tariff-weighted import shares across all upstream commodities, each with their own tariff rate and import share. Steel, rubber, and electronics inputs all face their own tariffs, and those costs propagate forward into the vehicle price.
 
-**Step 5 — PCE bridge aggregation: 6.6%**
+**Step 5 — PCE bridge aggregation: 5.0%**
 The final step converts the producer-level effect to a consumer-price effect. From the PCE bridge:
 
 | | Value (\$M) |
@@ -98,9 +98,9 @@ The final step converts the producer-level effect to a consumer-price effect. Fr
 
 Margins account for **46.3%** of what consumers pay. Under the constant dollar markup assumption, these margins do not respond to the tariff — retailers keep their dollar margin fixed. The tariff effect is therefore diluted when expressed as a share of the consumer price:
 
-$$\hat{P}_{\text{new vehicles}} = \frac{0.1236 \times 201{,}291}{375{,}081} = \mathbf{6.6\%}$$
+$$\hat{P}_{\text{new vehicles}} = \frac{0.0930 \times 201{,}291}{375{,}081} = \mathbf{5.0\%}$$
 
-Intuitively: the producer-level effect is 12.4%, but consumers pay roughly twice what producers receive (purchasers' value is 1.86× producers' value), and the extra half — the distribution margins — doesn't move. So the predicted consumer price effect is roughly half the producer-level effect.
+Intuitively: the producer-level effect is 9.3%, but consumers pay roughly twice what producers receive (purchasers' value is 1.86× producers' value), and the extra half — the distribution margins — doesn't move. So the predicted consumer price effect is roughly half the producer-level effect.
 
 ---
 
@@ -113,7 +113,7 @@ Intuitively: the producer-level effect is 12.4%, but consumers pay roughly twice
 | Intermediate use matrix | BEA Use Table | TableID 259 |
 | Gross output by industry | BEA Use Table (row T018) | TableID 259 |
 | PCE bridge | BEA PCEBridge_Summary.xlsx | 1997–2024 |
-| Tariff rate changes | Census imports & duties | NAICS6 → BEA concordance; $\Delta\tau$ = July 2025 minus 2024 annual average |
+| Tariff rate changes | Census imports & duties | NAICS6 → BEA concordance; $\Delta\tau$ = December 2025 minus 2024 annual average |
 
 ---
 

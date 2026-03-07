@@ -277,6 +277,188 @@ def step6_pce_effect(
     return result.reset_index()
 
 
+# ── Industry trace (diagnostic) ──────────────────────────────────────────────
+
+def trace_industry(
+    bea_code: str,
+    import_shares: pd.DataFrame,
+    industries: list,
+    L: np.ndarray,
+    m_vec: np.ndarray,
+    m_total: np.ndarray,
+    delta_tariff_df: pd.DataFrame,
+    pce_bridge: pd.DataFrame,
+    pce_effect_df: pd.DataFrame,
+    markup: str = "constant_dollar",
+) -> None:
+    """Print a full methodology trace for a single BEA IO industry.
+
+    Walks through every step in tariff_pce_methodology.md for `bea_code`:
+
+      Step 1  — direct import share  (m_i)
+      Step 4  — total import content via Leontief  (m̃_j)
+      Step 5  — tariff change  (Δτ)
+      Step 5  — predicted producer-level price effect  (p̂_j)
+      Step 6  — PCE bridge breakdown and final consumer-price effect
+
+    All pre-computed objects (import_shares, industries, L, m_vec, m_total,
+    delta_tariff_df, pce_bridge, pce_effect_df) should come from the
+    corresponding step functions so that the trace is consistent with the
+    main pipeline run.
+
+    Parameters
+    ----------
+    bea_code        : BEA IO commodity code, e.g. '3361MV'
+    import_shares   : output of step1_import_shares()
+    industries      : list returned by step2_3_leontief()
+    L               : Leontief inverse returned by step2_3_leontief()
+    m_vec           : direct import-share vector from step4_total_import_content()
+    m_total         : total import-content vector from step4_total_import_content()
+    delta_tariff_df : output of step5_delta_tariff()
+    pce_bridge      : output of load_pce_bridge()
+    pce_effect_df   : output of step6_pce_effect()
+    markup          : 'constant_dollar' (default) or 'constant_percent'
+    """
+    sep   = "─" * 64
+    sep2  = "· " * 32
+
+    # ── Resolve display name ──────────────────────────────────────────────────
+    descr_row = import_shares.query("BEA_code == @bea_code")
+    descr = descr_row["BEA_descr"].iloc[0] if not descr_row.empty else bea_code
+
+    print(sep)
+    print(f"  INDUSTRY TRACE  ·  {bea_code}  —  {descr}")
+    print(sep)
+
+    # ── Step 1: direct import share ───────────────────────────────────────────
+    direct_share = descr_row["import_share"].iloc[0] if not descr_row.empty else float("nan")
+    imports_val  = descr_row["imports"].iloc[0]      if not descr_row.empty else float("nan")
+    supply_val   = descr_row["total_supply"].iloc[0] if not descr_row.empty else float("nan")
+
+    print(f"\nStep 1  —  Direct import share  (m_i = imports / total supply)")
+    print(f"  imports       =  {imports_val:>12,.0f}  ($M)")
+    print(f"  total supply  =  {supply_val:>12,.0f}  ($M)")
+    print(f"  m_i           =  {direct_share:>12.1%}")
+
+    # ── Check industry list membership ───────────────────────────────────────
+    if bea_code not in industries:
+        print(f"\n  WARNING: '{bea_code}' is not in the Leontief industry list.")
+        print(f"  Steps 4–6 require the code to appear in both rows and columns of the")
+        print(f"  Use Table.  Cannot continue trace.")
+        return
+
+    j = industries.index(bea_code)
+    total_content = m_total[j]
+    amplification = total_content / direct_share if direct_share > 0 else float("nan")
+
+    # ── Step 4: total import content ─────────────────────────────────────────
+    print(f"\nStep 4  —  Total import content via Leontief  (m̃_j = m′ L)")
+    print(f"  direct m_i     =  {direct_share:>12.1%}  (imports at the border)")
+    print(f"  total m̃_j      =  {total_content:>12.1%}  (direct + all upstream tiers)")
+    print(f"  indirect share =  {total_content - direct_share:>12.1%}  (embedded in domestic inputs)")
+    print(f"  amplification  =  {amplification:>12.2f}×")
+
+    # ── Step 5: tariff change ─────────────────────────────────────────────────
+    tau_row = delta_tariff_df.query("bea_io == @bea_code")
+    print(f"\nStep 5  —  Import tariff change  (Δτ = τ_current − τ_baseline)")
+    if tau_row.empty:
+        delta_tau = 0.0
+        print(f"  '{bea_code}' not found in tariff data — Δτ = 0.0 (no tariff change modelled)")
+    else:
+        tau_base  = tau_row["tau_base"].iloc[0]
+        tau_curr  = tau_row["tau"].iloc[0]
+        delta_tau = tau_row["delta_tariff"].iloc[0]
+        print(f"  τ_baseline  =  {tau_base:>12.1%}")
+        print(f"  τ_current   =  {tau_curr:>12.1%}")
+        print(f"  Δτ          =  {delta_tau:>+12.1%}")
+
+    # ── Step 5: predicted producer-level price effect ─────────────────────────
+    tau_series = (
+        delta_tariff_df.set_index("bea_io")["delta_tariff"]
+        .reindex(industries)
+        .fillna(0)
+    )
+    tw_imports    = m_vec * tau_series.values
+    pred_full     = tw_imports @ L
+    p_hat         = pred_full[j]
+    naive_approx  = total_content * delta_tau
+
+    print(f"\nStep 5  —  Predicted producer-level price effect  (p̂_j = Σ_i m_i·Δτ_i·L_ij)")
+    print(f"  p̂_j             =  {p_hat:>12.1%}")
+    print(f"  Naive approx    =  {naive_approx:>12.1%}  (m̃_j × Δτ_j, ignores upstream tariff mix)")
+    print(f"  The gap reflects different Δτ rates on each upstream input commodity.")
+
+    # ── Step 6: PCE bridge ────────────────────────────────────────────────────
+    bridge_rows = pce_bridge.query("commodity_code == @bea_code").copy()
+    print(f"\nStep 6  —  PCE Bridge  ({bea_code} → PCE consumer categories)")
+
+    if bridge_rows.empty:
+        print(f"  No PCE bridge entries for '{bea_code}'.  No consumer-price effect computed.")
+        print(sep)
+        return
+
+    prod_val_total = bridge_rows["producers_value"].sum()
+    purc_val_total = bridge_rows["purchasers_value"].sum()
+    margins_total  = purc_val_total - prod_val_total
+    margin_share   = margins_total / purc_val_total if purc_val_total > 0 else float("nan")
+
+    weight_col = "producers_value" if markup == "constant_dollar" else "purchasers_value"
+    assumption = (
+        "constant dollar  (producers' value weight — margins unchanged)"
+        if markup == "constant_dollar"
+        else "constant percent (purchasers' value weight — margins scale up)"
+    )
+
+    print(f"  Markup assumption: {assumption}")
+    print()
+    print(f"  {'':40s}  {'Producers ($M)':>16}  {'Purchasers ($M)':>16}  {'Margins ($M)':>14}")
+    print(f"  {sep2}")
+
+    # Pre-compute category-level purchasers' value totals from the full bridge
+    # (a PCE category can span many commodities — the denominator must be the full total)
+    cat_purc_total = pce_bridge.groupby("PCE_category")["purchasers_value"].sum()
+
+    for _, row in bridge_rows.sort_values("purchasers_value", ascending=False).iterrows():
+        cat   = row["PCE_category"]
+        pv    = row["producers_value"]
+        puv   = row["purchasers_value"]
+        marg  = puv - pv
+        denom = cat_purc_total.get(cat, puv)
+        contrib = p_hat * row[weight_col] / denom if denom > 0 else float("nan")
+        print(f"  {cat:<40s}  {pv:>16,.0f}  {puv:>16,.0f}  {marg:>14,.0f}  → {contrib:.2%} this commodity")
+
+    print(f"  {sep2}")
+    print(f"  {'TOTAL (this commodity)':40s}  {prod_val_total:>16,.0f}  {purc_val_total:>16,.0f}  {margins_total:>14,.0f}")
+    print(f"  Margin share of consumer price: {margin_share:.1%}")
+
+    # Final PCE effects
+    pce_cats = bridge_rows["PCE_category"].unique().tolist()
+    matched  = pce_effect_df.query("PCE_category in @pce_cats")
+
+    print(f"\n  Final consumer-price effect (all commodities → PCE category):")
+    print(f"  {'PCE category':<40s}  {'Effect':>8}  {'Producers ($M)':>16}  {'Purchasers ($M)':>16}")
+    for _, row in matched.sort_values("predicted_effect", ascending=False).iterrows():
+        print(
+            f"  {row['PCE_category']:<40s}  "
+            f"{row['predicted_effect']:>8.2%}  "
+            f"{row['producers_value_total']:>16,.0f}  "
+            f"{row['purchasers_value_total']:>16,.0f}"
+        )
+
+    # Illustrative formula for single-commodity categories
+    if len(pce_cats) == 1 and len(bridge_rows) == 1:
+        eff = matched["predicted_effect"].iloc[0] if not matched.empty else float("nan")
+        pv  = bridge_rows["producers_value"].iloc[0]
+        puv = bridge_rows["purchasers_value"].iloc[0]
+        print(f"\n  Formula check (single-commodity PCE category):")
+        print(f"    p̂_j × producers_value / purchasers_value")
+        print(f"    {p_hat:.4f} × {pv:,.0f} / {puv:,.0f} = {p_hat * pv / puv:.2%}")
+        if not matched.empty:
+            print(f"    Matches pce_effect_df: {eff:.2%}")
+
+    print(sep)
+
+
 # ── Step 7a: Load monthly PCE price index ────────────────────────────────────
 
 _NIPA_MEASURE_MAP = {
