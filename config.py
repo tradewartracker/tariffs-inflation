@@ -79,7 +79,7 @@ COUNTERFACTUAL_BASELINE_MONTH: str = "2024-12"
 #   Example:  EXCESS_BASELINE_START=2015, EXCESS_BASELINE_END=2018
 #             → averages 2015, 2016, 2017, 2018 YoY rates (i.e. 2014→2018 data)
 EXCESS_BASELINE_START: int = 2015
-EXCESS_BASELINE_END:   int = 2018
+EXCESS_BASELINE_END:   int = 2019
 
 # ── PCE category lists ────────────────────────────────────────────────────────
 # These lists use the exact PCE_category strings that appear in the BEA PCE
