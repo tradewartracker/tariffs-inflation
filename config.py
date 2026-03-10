@@ -23,6 +23,22 @@ IO_YEAR: int = 2022          # Year of BEA Supply (Table 262) and Use (Table 259
 TARIFF_BASELINE_YEAR: int  = 2024       # Annual-average baseline (all 12 months pooled)
 TARIFF_CURRENT_MONTH: str  = "2025-12"  # Single month for "current" tariff rates (YYYY-MM)
 
+# ── Leontief inverse source ──────────────────────────────────────────────────
+# Controls which Leontief inverse is used for supply-chain propagation.
+#
+#   "computed"  → derived from scratch by inverting (I - A) built from BEA Use
+#                 Table 259.  Differences vs. BEA's published table are confined
+#                 to service-industry rows (wholesale/retail trade) that have
+#                 near-zero import shares and no tariff exposure, so results are
+#                 unaffected in practice.  This is the default.
+#
+#   "bea"       → fetches BEA's pre-computed Commodity-by-Commodity Total
+#                 Requirements (TableID 59), which uses BEA's full Make/Use
+#                 model including trade and transport margins.  Methodologically
+#                 closer to Yale Budget Lab.  A is still built from Table 259
+#                 (needed for the column-sum sanity check) but L is replaced.
+LEONTIEF_SOURCE: str = "computed"
+
 # ── Pass-through / markup assumption ─────────────────────────────────────────
 # Controls how the tariff effect is aggregated from producer to consumer prices
 # using the PCE bridge table (methodology §7 / Minton & Somale 2025 §4).
@@ -40,8 +56,10 @@ MARKUP_ASSUMPTION: str = "constant_dollar"
 # ── Inflation measure for monthly counterfactual ─────────────────────────────
 # Selects the NIPA T20804 series used in the monthly (Dec-to-Dec) comparison.
 #
-#   "core_pce"       → PCE excluding food and energy
-#   "headline_pce"   → Total PCE
+#   "core_pce"        → PCE excluding food and energy (T20804)
+#   "headline_pce"    → Total PCE (T20804)
+#   "core_goods_pce"  → Core goods only (T20404, quarterly); skips the monthly
+#                        step in Cell 7 and uses only the quarterly index in Cell 8.
 #
 # For the quarterly core-goods-only index (Cell 8), see CORE_GOODS_CATEGORIES
 # and NIPA_CROSSWALK below; that index is always constructed from T20404.

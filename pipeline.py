@@ -58,12 +58,17 @@ def step1_import_shares(year: int, api_key: str) -> pd.DataFrame:
 
 # ── Steps 2–3: Technical coefficients matrix and Leontief inverse ─────────────
 
-def step2_3_leontief(year: int, api_key: str) -> tuple:
+def step2_3_leontief(year: int, api_key: str, leontief_source: str = "computed") -> tuple:
     """Steps 2–3 (methodology §3–4): Build A matrix and Leontief inverse L.
 
     A_ij = intermediate use of commodity i per dollar of output of industry j
            [BEA Use Table 259]
-    L = (I - A)^{-1}
+
+    leontief_source:
+        "computed" — invert (I - A) directly from Table 259 (default).
+        "bea"      — replace L with BEA's pre-computed Commodity-by-Commodity
+                     Total Requirements table (TableID 59).  A is still built
+                     from Table 259 for the sanity checks.
 
     Returns (industries, A, L):
         industries : list of BEA IO codes defining the shared row/column ordering
@@ -104,9 +109,84 @@ def step2_3_leontief(year: int, api_key: str) -> tuple:
     go = gross_output.set_index("BEA_code").reindex(industries)["gross_output"].values
     A = use_matrix.values / go[np.newaxis, :]
 
-    I = np.eye(len(industries))
-    L = np.linalg.inv(I - A)
+    if leontief_source == "bea":
+        r2 = requests.get(
+            "https://apps.bea.gov/api/data"
+            f"?UserID={api_key}"
+            "&method=GetData"
+            "&DataSetName=InputOutput"
+            "&TableID=59"
+            f"&Year={year}"
+            "&ResultFormat=json"
+        )
+        r2.raise_for_status()
+        df2 = pd.DataFrame(r2.json()["BEAAPI"]["Results"][0]["Data"])
+        df2["DataValue"] = pd.to_numeric(df2["DataValue"].str.replace(",", ""), errors="coerce")
+        L = (
+            df2[df2["RowCode"].isin(industries) & df2["ColCode"].isin(industries)]
+            .pivot_table(index="RowCode", columns="ColCode", values="DataValue", fill_value=0)
+            .reindex(index=industries, columns=industries, fill_value=0)
+            .values
+        )
+        print("Leontief source: BEA pre-computed Total Requirements (TableID 59)")
+    else:
+        I = np.eye(len(industries))
+        L = np.linalg.inv(I - A)
+        print("Leontief source: computed from (I - A)^{-1} via Use Table 259")
+
     return industries, A, L
+
+
+# ── Validation: compare computed L against BEA pre-computed Total Requirements ─
+
+def validate_leontief(year: int, api_key: str, industries: list, L: np.ndarray) -> dict:
+    """Fetch BEA TableID 260 (Commodity-by-Commodity Total Requirements) and
+    compare element-wise against the locally computed Leontief inverse L.
+
+    Returns a dict with summary statistics and a DataFrame of the top discrepancies.
+    """
+    r = requests.get(
+        "https://apps.bea.gov/api/data"
+        f"?UserID={api_key}"
+        "&method=GetData"
+        "&DataSetName=InputOutput"
+        "&TableID=59"
+        f"&Year={year}"
+        "&ResultFormat=json"
+    )
+    r.raise_for_status()
+    df_bea = pd.DataFrame(r.json()["BEAAPI"]["Results"][0]["Data"])
+    df_bea["DataValue"] = pd.to_numeric(df_bea["DataValue"].str.replace(",", ""), errors="coerce")
+
+    L_bea = (
+        df_bea[df_bea["RowCode"].isin(industries) & df_bea["ColCode"].isin(industries)]
+        .pivot_table(index="RowCode", columns="ColCode", values="DataValue", fill_value=0)
+        .reindex(index=industries, columns=industries, fill_value=0)
+        .values
+    )
+
+    diff     = L - L_bea
+    abs_diff = np.abs(diff)
+
+    flat_idx = np.argsort(abs_diff.ravel())[-10:][::-1]
+    top_rows = []
+    for flat in flat_idx:
+        i, j = divmod(flat, len(industries))
+        top_rows.append({
+            "row_industry": industries[i],
+            "col_industry": industries[j],
+            "L_computed":   L[i, j],
+            "L_bea":        L_bea[i, j],
+            "abs_diff":     abs_diff[i, j],
+        })
+
+    return {
+        "max_abs_diff":  abs_diff.max(),
+        "mean_abs_diff": abs_diff.mean(),
+        "max_rel_diff":  (abs_diff / np.abs(L_bea).clip(1e-10)).max(),
+        "top_diffs":     pd.DataFrame(top_rows),
+        "L_bea":         L_bea,
+    }
 
 
 # ── Step 4: Total import content ─────────────────────────────────────────────
@@ -161,7 +241,10 @@ def load_pce_bridge(year: int, api_key: str) -> pd.DataFrame:
     )
     df["commodity_code"]  = df["commodity_code"].astype(str).str.strip()
     df["PCE_category"]    = df["PCE_category"].astype(str).str.strip()
-    df = df.dropna(subset=["commodity_code", "PCE_category"])
+    df = df[
+        ~df["commodity_code"].isin({"nan", "None", ""})
+        & ~df["PCE_category"].isin({"nan", "None", ""})
+    ]
     df["producers_value"]  = pd.to_numeric(df["producers_value"],  errors="coerce")
     df["purchasers_value"] = pd.to_numeric(df["purchasers_value"], errors="coerce")
     return df.reset_index(drop=True)
@@ -613,6 +696,53 @@ def step7_core_goods_index(
     missing = [n for n in bea_names if n not in price_data["LineDescription"].values]
     if missing:
         raise ValueError(f"Missing T20404 series: {missing}")
+
+    price_wide = price_data.pivot(
+        index="TimePeriod", columns="LineDescription", values="DataValue"
+    )
+
+    core = pce_effect_df.query("PCE_category in @core_goods_categories")
+    weight_map = (
+        core[["PCE_category", "purchasers_value_total"]]
+        .assign(bea_name=lambda df: df["PCE_category"].map(nipa_crosswalk))
+        .set_index("bea_name")["purchasers_value_total"]
+    )
+    weights = weight_map.reindex(price_wide.columns)
+
+    index_series = price_wide.multiply(weights, axis=1).sum(axis=1) / weights.sum()
+    return index_series.sort_index()
+
+
+def step7_core_goods_index_monthly(
+    pce_monthly_df: pd.DataFrame,
+    pce_effect_df: pd.DataFrame,
+    core_goods_categories: list,
+    nipa_crosswalk: dict,
+) -> pd.Series:
+    """Construct a weighted monthly price index for core goods (NI Underlying Detail U20404).
+
+    Parameters
+    ----------
+    pce_monthly_df : pd.DataFrame
+        DataFrame from NIUnderlyingDetail / U20404 / Frequency=M.
+        Must have columns: LineDescription, TimePeriod (BEA format 'YYYYMmm'),
+        DataValue.
+
+    Returns pd.Series indexed by month label (e.g. '2025-12').
+    """
+    bea_names = list(nipa_crosswalk.values())
+    price_data = (
+        pce_monthly_df[pce_monthly_df["LineDescription"].isin(bea_names)]
+        [["LineDescription", "TimePeriod", "DataValue"]]
+        .copy()
+    )
+
+    missing = [n for n in bea_names if n not in price_data["LineDescription"].values]
+    if missing:
+        raise ValueError(f"Missing U20404 series: {missing}")
+
+    # Convert BEA monthly format '2025M12' → '2025-12'
+    price_data["TimePeriod"] = price_data["TimePeriod"].str.replace("M", "-", regex=False)
 
     price_wide = price_data.pivot(
         index="TimePeriod", columns="LineDescription", values="DataValue"
