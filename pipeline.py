@@ -767,62 +767,88 @@ def step7_excess_inflation(
     pce_effect_df: pd.DataFrame,
     core_goods_categories: list,
     nipa_crosswalk: dict,
-    current_year: int,
+    current_start_month: str,
+    current_end_month: str,
     baseline_start: int,
     baseline_end: int,
 ) -> pd.DataFrame:
     """Step 7 (methodology §9): Predicted tariff effect vs. excess inflation by category.
 
     Excess inflation for category k:
-        excess_k = YoY_inflation_k(current_year)
-                   − mean(YoY_inflation_k(y) for y in baseline_start..baseline_end)
+        excess_k = growth_k(current_start_month → current_end_month)
+                   − mean over baseline years of the equivalent window growth
 
-    baseline_start / baseline_end : inclusive range of YoY end-years that define
-                                    the "normal" pre-tariff trend.
+    For baseline year Y (used as the end-year), the equivalent window is:
+        (Y − year_offset)-{start_mm} → Y-{end_mm}
+    where year_offset = end_year − start_year of the current window.
+
+    Example — default Dec-over-Dec (year_offset = 1):
+        current window  : 2024-12 → 2025-12
+        baseline Y=2015 : 2014-12 → 2015-12
+
+    Example — sub-annual window (year_offset = 1):
+        current window  : 2024-12 → 2025-03
+        baseline Y=2015 : 2014-12 → 2015-03
+
+    current_start_month / current_end_month : 'YYYY-MM' strings
+    baseline_start / baseline_end           : inclusive end-year range for baseline
 
     Returns DataFrame with columns:
         bea_name, PCE_category, predicted_effect, pce_share,
         inflation_current, baseline_inflation, excess_inflation
     """
+    start_year  = int(current_start_month[:4])
+    end_year    = int(current_end_month[:4])
+    start_mm    = current_start_month[5:]   # e.g. "12"
+    end_mm      = current_end_month[5:]     # e.g. "03"
+    year_offset = end_year - start_year     # typically 0 or 1
+
     baseline_years = list(range(baseline_start, baseline_end + 1))
-    all_years = sorted(
-        set([y - 1 for y in baseline_years] + baseline_years + [current_year - 1, current_year])
-    )
-    year_str = ",".join(str(y) for y in all_years)
+    data_years = sorted(set(
+        [y - year_offset for y in baseline_years]
+        + baseline_years
+        + [start_year, end_year]
+    ))
+    year_str = ",".join(str(y) for y in data_years)
 
     r = requests.get(
         "https://apps.bea.gov/api/data"
         f"?UserID={api_key}"
         "&method=GetData"
-        "&DataSetName=NIPA"
-        "&TableName=T20404"
-        "&Frequency=A"
+        "&DataSetName=NIUnderlyingDetail"
+        "&TableName=U20404"
+        "&Frequency=M"
         f"&Year={year_str}"
         "&ResultFormat=json"
     )
     r.raise_for_status()
     hist = pd.DataFrame(r.json()["BEAAPI"]["Results"]["Data"])
     hist["DataValue"] = pd.to_numeric(hist["DataValue"], errors="coerce")
-    hist["Year"] = hist["TimePeriod"].astype(int)
+    # Convert BEA format '2025M03' → '2025-03'
+    hist["TimePeriod"] = hist["TimePeriod"].str.replace("M", "-", regex=False)
 
     bea_names = list(nipa_crosswalk.values())
     hist = hist[hist["LineDescription"].isin(bea_names)]
-    hist_wide = hist.pivot(index="LineDescription", columns="Year", values="DataValue")
+    hist_wide = hist.pivot(index="LineDescription", columns="TimePeriod", values="DataValue")
 
-    baseline_inflation = pd.Series({
-        name: np.mean([
-            (hist_wide.loc[name, yr] - hist_wide.loc[name, yr - 1]) / hist_wide.loc[name, yr - 1]
-            for yr in baseline_years
-            if yr in hist_wide.columns and yr - 1 in hist_wide.columns
-        ])
-        for name in bea_names
-        if name in hist_wide.index
-    })
-
+    # Current period growth
     inflation_current = (
-        (hist_wide[current_year] - hist_wide[current_year - 1])
-        / hist_wide[current_year - 1]
+        hist_wide[current_end_month] / hist_wide[current_start_month] - 1
     )
+
+    # Baseline: average equivalent-window growth over baseline end-years
+    baseline_rates = {}
+    for y in baseline_years:
+        bs_month = f"{y - year_offset}-{start_mm}"
+        be_month = f"{y}-{end_mm}"
+        if bs_month in hist_wide.columns and be_month in hist_wide.columns:
+            baseline_rates[y] = hist_wide[be_month] / hist_wide[bs_month] - 1
+
+    if baseline_rates:
+        baseline_inflation = pd.concat(baseline_rates, axis=1).mean(axis=1)
+    else:
+        baseline_inflation = pd.Series(0.0, index=hist_wide.index)
+
     excess_inflation = inflation_current - baseline_inflation
 
     core = pce_effect_df.query("PCE_category in @core_goods_categories").copy()

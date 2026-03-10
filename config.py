@@ -78,8 +78,25 @@ COUNTERFACTUAL_BASELINE_MONTH: str = "2024-12"
 #
 #   Example:  EXCESS_BASELINE_START=2015, EXCESS_BASELINE_END=2018
 #             → averages 2015, 2016, 2017, 2018 YoY rates (i.e. 2014→2018 data)
-EXCESS_BASELINE_START: int = 2015
+EXCESS_BASELINE_START: int = 2000
 EXCESS_BASELINE_END:   int = 2019
+
+# ── Excess-inflation current window ──────────────────────────────────────────
+# The growth window for the "current" period in the excess-inflation scatter
+# (Cell 9 / methodology §9).  Both values are 'YYYY-MM' strings.
+#
+#   Default (Dec-over-Dec, full year):
+#     EXCESS_CURRENT_START_MONTH = "2024-12"
+#     EXCESS_CURRENT_END_MONTH   = "2025-12"
+#
+#   To use a narrower window, e.g. Dec 2024 → Mar 2025 vs. baseline Dec→Mar:
+#     EXCESS_CURRENT_START_MONTH = "2024-12"
+#     EXCESS_CURRENT_END_MONTH   = "2025-03"
+#
+# The baseline comparison always uses the same calendar months, shifted to each
+# baseline year (e.g. Dec 2014 → Mar 2015 for baseline year 2015).
+EXCESS_CURRENT_START_MONTH: str = "2024-12"
+EXCESS_CURRENT_END_MONTH:   str = "2025-12"
 
 # ── PCE category lists ────────────────────────────────────────────────────────
 # These lists use the exact PCE_category strings that appear in the BEA PCE
