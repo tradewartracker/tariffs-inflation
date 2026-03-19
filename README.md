@@ -1,6 +1,20 @@
-# tariffs-inflation
+# The effects of tariffs on inflation?
 
-Estimates the pass-through of import tariffs into U.S. consumer prices (PCE inflation) using BEA input-output tables, Census import data, and the Leontief inverse.
+<p float="left" align="middle">
+  <img src="../figures/tariff_vs_contribution_same_units.png" width="875" />
+</p>
+
+An important question over the past year is the following: How much have tariffs contributed to inflation in 2025? Federal reserve officials and other economics commentators have made statements along the lines of ``50 to 70 basis points'' to core PCE. 
+
+Often the basis for these predictions / accounting statements arise from taking tariff measures and then passing them through input-output tables. 
+
+This repository estimates the pass-through of import tariffs into U.S. consumer prices (PCE inflation) using BEA input-output tables. 
+
+The key result is in the figure above: At the category level, the inflation that we have seen over the past year does **not** correlate with what would be predicted. The implication is that the inflation we have seen over the past year is **not** related to tariffs.  
+
+The content below provides an overview as to how the repository works.
+
+---
 
 Two parallel pipelines are provided:
 
