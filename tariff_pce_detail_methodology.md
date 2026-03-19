@@ -100,7 +100,7 @@ These detail categories are then aggregated to the summary "New motor vehicles" 
 
 ### Aggregation to Summary Categories
 
-The detail PCE bridge produces ~212 categories, but the counterfactual inflation analysis (Step 7) and the NIPA price index data use the 27 summary-level core goods categories defined in `config.py`. We therefore aggregate the detail-level predicted effects to summary categories using a mapping (`DETAIL_TO_SUMMARY_PCE` in `pipeline_detail.py`), weighted by purchasers' value:
+The detail PCE bridge produces ~212 categories, but the counterfactual inflation analysis (Step 7) and the NIPA price index data use the 27 summary-level core goods categories defined in `code/config.py`. We therefore aggregate the detail-level predicted effects to summary categories using a mapping (`DETAIL_TO_SUMMARY_PCE` in `code/pipeline_detail.py`), weighted by purchasers' value:
 
 $$\hat{P}_K = \frac{\sum_{k \in K} \hat{P}_k \cdot PUV_k}{\sum_{k \in K} PUV_k}$$
 
@@ -178,7 +178,7 @@ This is less than half the summary pipeline's 5.0% estimate, demonstrating the i
 | NAICS → BEA detail concordance | BEA official concordance | `BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx` |
 | Tariff rate changes | Census imports & duties | NAICS6 → BEA detail concordance; Δτ = current month minus baseline annual average |
 
-All detail IO files are from the 2017 benchmark year — the only year for which BEA publishes detail-level tables. They are downloaded once via `download_detail_data.py` from:
+All detail IO files are from the 2017 benchmark year — the only year for which BEA publishes detail-level tables. They are downloaded once via `code/download_detail_data.py` from:
 - `https://apps.bea.gov/industry/iTables%20Static%20Files/AllTablesSUP.zip` (Supply table and CxC Total Requirements)
 - `https://apps.bea.gov/industry/release/xlsx/PCEBridge_Detail.xlsx`
 

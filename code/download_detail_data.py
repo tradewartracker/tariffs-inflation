@@ -15,7 +15,7 @@ import zipfile
 
 import requests
 
-DEST_DIR = os.path.join(os.path.dirname(__file__), "data", "io_detail")
+DEST_DIR = os.path.join(os.path.dirname(__file__), os.pardir, "data", "io_detail")
 
 SUP_ZIP_URL = (
     "https://apps.bea.gov/industry/iTables%20Static%20Files/AllTablesSUP.zip"

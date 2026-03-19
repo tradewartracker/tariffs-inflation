@@ -8,13 +8,16 @@ updates.
 
 import os
 
+# ── Repo root (one level up from code/) ──────────────────────────────────────
+_ROOT = os.path.join(os.path.dirname(__file__), os.pardir)
+
 # ── BEA API key ───────────────────────────────────────────────────────────────
 # Set the BEA_KEY environment variable to avoid committing credentials.
 # Falls back to the literal key if the env var is not set.
 BEA_KEY: str = os.environ.get("BEA_KEY", "1B069F6A-DB45-4EBF-8324-2F4A83E223EF")
 
 # ── Data ──────────────────────────────────────────────────────────────────────
-IMPORTS_FILE: str = "data/imports/TOTALnaics-data-2025-12.parquet"
+IMPORTS_FILE: str = os.path.join(_ROOT, "data/imports/TOTALnaics-data-2025-12.parquet")
 
 # ── BEA IO tables ─────────────────────────────────────────────────────────────
 IO_YEAR: int = 2024          # Year of BEA Supply (Table 262) and Use (Table 259) tables
@@ -33,7 +36,7 @@ CONCORDANCE_METHOD: str = "bea_file"
 # Required only when CONCORDANCE_METHOD == "bea_file".
 # Supported formats: .csv, .xlsx, .xls
 # Example: "data/concordance/naics_to_bea_summary.csv"
-BEA_CONCORDANCE_FILE: str = "data/concordance/naics_to_bea_summary.csv"
+BEA_CONCORDANCE_FILE: str = os.path.join(_ROOT, "data/concordance/naics_to_bea_summary.csv")
 
 # If True, when using CONCORDANCE_METHOD="bea_file", NAICS6 codes missing from
 # the external concordance will fall back to the legacy built-in manual mapping.
@@ -191,10 +194,10 @@ CORE_GOODS_CATEGORIES: list = DURABLE_GOODS_CATEGORIES + NONDURABLE_GOODS_CATEGO
 
 DETAIL_IO_YEAR: int = 2017
 
-DETAIL_SUPPLY_FILE: str = "data/io_detail/Supply_2017_DET.xlsx"
-DETAIL_CXC_TR_FILE: str = "data/io_detail/CxC_TR_2017_PRO_DET.xlsx"
-DETAIL_PCE_BRIDGE_FILE: str = "data/io_detail/PCEBridge_Detail.xlsx"
-DETAIL_CONCORDANCE_FILE: str = "data/stuff/BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx"
+DETAIL_SUPPLY_FILE: str = os.path.join(_ROOT, "data/io_detail/Supply_2017_DET.xlsx")
+DETAIL_CXC_TR_FILE: str = os.path.join(_ROOT, "data/io_detail/CxC_TR_2017_PRO_DET.xlsx")
+DETAIL_PCE_BRIDGE_FILE: str = os.path.join(_ROOT, "data/io_detail/PCEBridge_Detail.xlsx")
+DETAIL_CONCORDANCE_FILE: str = os.path.join(_ROOT, "data/stuff/BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx")
 
 # ── NIPA T20404 crosswalk ─────────────────────────────────────────────────
 NIPA_CROSSWALK: dict = {

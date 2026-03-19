@@ -23,33 +23,35 @@ Both pipelines translate a change in tariff rates into a predicted price level e
 
 ## Files
 
+All Python modules and Jupyter notebooks live in the `code/` directory. Markdown documentation stays at the repo root.
+
 ### Summary pipeline (71 industries)
 
 | File | Purpose |
 |---|---|
-| `pipeline.py` | Pure functions implementing each step of the summary methodology. |
-| `concordance.py` | Maps 6-digit NAICS codes to BEA summary IO industry codes. |
-| `parse-bea-io-final.ipynb` | End-to-end notebook running the summary pipeline with scatter plots and counterfactuals. |
-| `tariff_pce_methodology.md` | Detailed methodology documentation (summary pipeline). |
+| [`code/pipeline.py`](code/pipeline.py) | Pure functions implementing each step of the summary methodology. |
+| [`code/concordance.py`](code/concordance.py) | Maps 6-digit NAICS codes to BEA summary IO industry codes. |
+| [`code/parse-bea-io-final.ipynb`](code/parse-bea-io-final.ipynb) | End-to-end notebook running the summary pipeline with scatter plots and counterfactuals. |
+| [`tariff_pce_methodology.md`](tariff_pce_methodology.md) | Detailed methodology documentation (summary pipeline). |
 
 ### Detail pipeline (402 commodities)
 
 | File | Purpose |
 |---|---|
-| `pipeline_detail.py` | Pure functions implementing each step of the detail methodology. |
-| `concordance_detail.py` | Maps 6-digit NAICS codes to BEA 402-commodity detail codes via longest-prefix matching. |
-| `download_detail_data.py` | One-time download of BEA detail IO Excel files into `data/io_detail/`. |
-| `parse-bea-io-detail.ipynb` | End-to-end notebook running the detail pipeline with scatter plots and counterfactuals. |
-| `tariff_pce_detail_methodology.md` | Detailed methodology documentation (detail pipeline). |
-| `detail_data_sources.md` | Reference for all detail-level data files and download URLs. |
+| [`code/pipeline_detail.py`](code/pipeline_detail.py) | Pure functions implementing each step of the detail methodology. |
+| [`code/concordance_detail.py`](code/concordance_detail.py) | Maps 6-digit NAICS codes to BEA 402-commodity detail codes via longest-prefix matching. |
+| [`code/download_detail_data.py`](code/download_detail_data.py) | One-time download of BEA detail IO Excel files into `data/io_detail/`. |
+| [`code/parse-bea-io-detail.ipynb`](code/parse-bea-io-detail.ipynb) | End-to-end notebook running the detail pipeline with scatter plots and counterfactuals. |
+| [`tariff_pce_detail_methodology.md`](tariff_pce_detail_methodology.md) | Detailed methodology documentation (detail pipeline). |
+| [`detail_data_sources.md`](detail_data_sources.md) | Reference for all detail-level data files and download URLs. |
 
 ### Shared
 
 | File | Purpose |
 |---|---|
-| `config.py` | All user-facing parameters (years, file paths, BEA API key, markup assumption). **Start here.** |
-| `compute_tariff_rates.py` | Loads Census import parquet data and computes effective tariff rates by NAICS code. |
-| `make-imports-naics-dataset.ipynb` | Prepares the Census import data into the parquet format expected by both pipelines. |
+| [`code/config.py`](code/config.py) | All user-facing parameters (years, file paths, BEA API key, markup assumption). **Start here.** |
+| [`code/compute_tariff_rates.py`](code/compute_tariff_rates.py) | Loads Census import parquet data and computes effective tariff rates by NAICS code. |
+| [`code/make-imports-naics-dataset.ipynb`](code/make-imports-naics-dataset.ipynb) | Prepares the Census import data into the parquet format expected by both pipelines. |
 
 ---
 
@@ -69,11 +71,11 @@ $env:BEA_KEY = "your-key-here"
 
 ### 2. Prepare import data
 
-Run `make-imports-naics-dataset.ipynb` to download and build the Census import parquet file. The output should be placed at the path specified by `IMPORTS_FILE` in `config.py` (default: `data/imports/TOTALnaics-data-YYYY-MM.parquet`).
+Run `code/make-imports-naics-dataset.ipynb` to download and build the Census import parquet file. The output should be placed at the path specified by `IMPORTS_FILE` in `config.py` (default: `data/imports/TOTALnaics-data-YYYY-MM.parquet`).
 
 ### 3. Configure
 
-Edit `config.py` to set:
+Edit `code/config.py` to set:
 
 - `IO_YEAR` — which BEA summary IO tables to use (e.g. `2022`)
 - `TARIFF_BASELINE_YEAR` — the pre-tariff baseline year for average rates
@@ -83,25 +85,25 @@ Edit `config.py` to set:
 
 ### 4a. Run the summary pipeline
 
-Open `parse-bea-io-final.ipynb` or import and call the step functions from `pipeline.py`. Each function is documented with its corresponding section in `tariff_pce_methodology.md`.
+Open `code/parse-bea-io-final.ipynb` or import and call the step functions from `code/pipeline.py`. Each function is documented with its corresponding section in `tariff_pce_methodology.md`.
 
 ### 4b. Run the detail pipeline
 
 First download the BEA detail IO Excel files (one-time, ~20 MB):
 
 ```
-python download_detail_data.py
+python code/download_detail_data.py
 ```
 
-Then open `parse-bea-io-detail.ipynb` or import and call the step functions from `pipeline_detail.py`. The detail pipeline uses the same tariff data and config parameters as the summary pipeline but operates at the 402-commodity level.
+Then open `code/parse-bea-io-detail.ipynb` or import and call the step functions from `code/pipeline_detail.py`. The detail pipeline uses the same tariff data and config parameters as the summary pipeline but operates at the 402-commodity level.
 
 ---
 
 ## Data
 
-- **Census import data** — Monthly imports and duties by 6-digit NAICS code. Downloaded and processed via `make-imports-naics-dataset.ipynb`, stored as a parquet file in `data/imports/`.
+- **Census import data** — Monthly imports and duties by 6-digit NAICS code. Downloaded and processed via `code/make-imports-naics-dataset.ipynb`, stored as a parquet file in `data/imports/`.
 - **BEA summary IO tables** — Fetched at runtime from the BEA API (Tables 259 and 262). Annual data for 1997–2023.
-- **BEA detail IO tables** — Downloaded once via `download_detail_data.py` into `data/io_detail/`. Benchmark year 2017 only. Includes Supply table, pre-computed Leontief inverse, and detail PCE bridge.
+- **BEA detail IO tables** — Downloaded once via `code/download_detail_data.py` into `data/io_detail/`. Benchmark year 2017 only. Includes Supply table, pre-computed Leontief inverse, and detail PCE bridge.
 - **BEA PCE Bridge** — Summary bridge fetched at runtime from the BEA website; detail bridge included in the detail data download.
 - **NAICS → BEA concordance** — For summary: `data/concordance/naics_to_bea_summary.csv`. For detail: `data/stuff/BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx`.
 
