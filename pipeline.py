@@ -7,6 +7,7 @@ with no side effects.  Import and call them from the notebook.
 """
 
 import io
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -256,6 +257,9 @@ def step5_delta_tariff(
     imports_file: str,
     baseline_year: int,
     current_month: str,
+    concordance_method: str = "manual",
+    bea_concordance_file: Optional[str] = None,
+    fallback_to_manual_unmapped: bool = False,
 ) -> pd.DataFrame:
     """Step 5 (methodology §6): Δτ = τ_current − τ_baseline per BEA IO industry.
 
@@ -263,6 +267,18 @@ def step5_delta_tariff(
                 (sum duties and imports across months, then divide once —
                  correctly handles varying import volumes across months).
     Current   = single month `current_month` in 'YYYY-MM' format.
+
+    concordance_method:
+        "manual" (default): built-in NAICS->BEA rules in concordance.py.
+        "bea_file": load NAICS->BEA mapping from `bea_concordance_file`.
+
+    bea_concordance_file:
+        Path to .csv/.xlsx/.xls concordance file when
+        concordance_method="bea_file".
+    fallback_to_manual_unmapped:
+        If True and concordance_method="bea_file", any NAICS6 code not
+        found in the external concordance file falls back to the manual
+        NAICS→BEA mapping used by this repo.
 
     Returns DataFrame with columns:
         bea_io, bea_desc, tau_base, tau, delta_tariff, imports, duties
@@ -273,7 +289,12 @@ def step5_delta_tariff(
     rates_baseline = compute_effective_tariff_rates(df, dates_baseline)
     rates_current  = compute_effective_tariff_rates(df, [current_month])
 
-    concordance  = build_concordance(rates_current["naics6"].tolist())
+    concordance = build_concordance(
+        rates_current["naics6"].tolist(),
+        method=concordance_method,
+        bea_concordance_file=bea_concordance_file,
+        fallback_to_manual_unmapped=fallback_to_manual_unmapped,
+    )
     df_baseline  = aggregate_to_bea(rates_baseline, concordance)
     df_current   = aggregate_to_bea(rates_current,  concordance)
 
@@ -604,6 +625,7 @@ def step7_counterfactual(
     baseline_month: str,
     current_month: str,
     core_goods_categories: list,
+    pce_bridge: Optional[pd.DataFrame] = None,
 ) -> dict:
     """Step 7 (methodology §8): Counterfactual inflation from T20804 series.
 
@@ -615,6 +637,11 @@ def step7_counterfactual(
 
     baseline_month / current_month : 'YYYY-MM' strings matching inflation_series index.
 
+    pce_bridge : optional DataFrame from load_pce_bridge()
+        When provided, denominator shares use the full bridge spending universe
+        instead of only categories present in pce_effect_df. This avoids
+        denominator shrinkage if some categories have missing modeled effects.
+
     Returns dict with keys:
         actual_inflation, core_goods_effect, core_goods_share,
         tariff_contribution, counterfactual_inflation
@@ -624,14 +651,44 @@ def step7_counterfactual(
     if core.empty:
         raise ValueError("No core goods categories matched in pce_effect_df.")
 
+    missing_core_categories = sorted(
+        set(core_goods_categories) - set(core["PCE_category"].unique())
+    )
+    if missing_core_categories:
+        print(
+            "Warning: some core-goods categories are missing from modeled effects: "
+            f"{missing_core_categories}"
+        )
+
     core_effect = (
         (core["predicted_effect"] * core["purchasers_value_total"]).sum()
         / core["purchasers_value_total"].sum()
     )
-    core_goods_share = (
-        core["purchasers_value_total"].sum()
-        / pce_effect_df["purchasers_value_total"].sum()
-    )
+    modeled_total_pce = pce_effect_df["purchasers_value_total"].sum()
+    if pce_bridge is not None:
+        full_pce_totals = (
+            pce_bridge.groupby("PCE_category")["purchasers_value"]
+            .sum()
+            .fillna(0)
+        )
+        full_total_pce = full_pce_totals.sum()
+        full_core_pce = full_pce_totals.reindex(core_goods_categories).fillna(0).sum()
+        core_goods_share = core["purchasers_value_total"].sum() / full_total_pce
+        core_weight_coverage = (
+            core["purchasers_value_total"].sum() / full_core_pce
+            if full_core_pce > 0
+            else float("nan")
+        )
+        modeled_pce_coverage = (
+            modeled_total_pce / full_total_pce
+            if full_total_pce > 0
+            else float("nan")
+        )
+    else:
+        full_total_pce = modeled_total_pce
+        core_goods_share = core["purchasers_value_total"].sum() / modeled_total_pce
+        core_weight_coverage = 1.0
+        modeled_pce_coverage = 1.0
 
     for month in (baseline_month, current_month):
         if month not in inflation_series.index:
@@ -652,6 +709,10 @@ def step7_counterfactual(
         "core_goods_share":        core_goods_share,
         "tariff_contribution":     tariff_contribution,
         "counterfactual_inflation": actual_inflation - tariff_contribution,
+        "modeled_pce_coverage":    modeled_pce_coverage,
+        "core_weight_coverage":    core_weight_coverage,
+        "missing_core_categories": missing_core_categories,
+        "pce_denominator_total":   full_total_pce,
     }
 
 

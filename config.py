@@ -23,6 +23,22 @@ IO_YEAR: int = 2022          # Year of BEA Supply (Table 262) and Use (Table 259
 TARIFF_BASELINE_YEAR: int  = 2024       # Annual-average baseline (all 12 months pooled)
 TARIFF_CURRENT_MONTH: str  = "2025-12"  # Single month for "current" tariff rates (YYYY-MM)
 
+# ── Concordance source (NAICS6 -> BEA IO) ───────────────────────────────────
+# Controls how NAICS6 tariff rates are mapped into BEA IO industries.
+#
+#   "manual"   → use the built-in mapping rules in concordance.py (legacy method).
+#   "bea_file" → load mapping from an external concordance file path below.
+CONCORDANCE_METHOD: str = "bea_file"
+
+# Required only when CONCORDANCE_METHOD == "bea_file".
+# Supported formats: .csv, .xlsx, .xls
+# Example: "data/concordance/naics_to_bea_summary.csv"
+BEA_CONCORDANCE_FILE: str = "data/concordance/naics_to_bea_summary.csv"
+
+# If True, when using CONCORDANCE_METHOD="bea_file", NAICS6 codes missing from
+# the external concordance will fall back to the legacy built-in manual mapping.
+CONCORDANCE_FALLBACK_TO_MANUAL_UNMAPPED: bool = True
+
 # ── Leontief inverse source ──────────────────────────────────────────────────
 # Controls which Leontief inverse is used for supply-chain propagation.
 #
@@ -78,8 +94,8 @@ COUNTERFACTUAL_BASELINE_MONTH: str = "2024-12"
 #
 #   Example:  EXCESS_BASELINE_START=2015, EXCESS_BASELINE_END=2018
 #             → averages 2015, 2016, 2017, 2018 YoY rates (i.e. 2014→2018 data)
-EXCESS_BASELINE_START: int = 2015
-EXCESS_BASELINE_END:   int = 2019
+EXCESS_BASELINE_START: int = 2024
+EXCESS_BASELINE_END:   int = 2024
 
 # ── Excess-inflation current window ──────────────────────────────────────────
 # The growth window for the "current" period in the excess-inflation scatter
@@ -97,6 +113,14 @@ EXCESS_BASELINE_END:   int = 2019
 # baseline year (e.g. Dec 2014 → Mar 2015 for baseline year 2015).
 EXCESS_CURRENT_START_MONTH: str = "2024-12"
 EXCESS_CURRENT_END_MONTH:   str = "2025-12"
+
+# ── Real PCE growth window (absolute, not excess) ─────────────────────────────
+# Window used for the "actual real PCE growth" scatter (excess inflation vs.
+# raw real consumption growth).  Unlike the excess-inflation window this is NOT
+# differenced against a baseline; it is simply the growth rate from start to
+# end.  Defaults to the same Dec-over-Dec window as the excess-inflation plot.
+REAL_PCE_GROWTH_START_MONTH: str = "2023-12"
+REAL_PCE_GROWTH_END_MONTH:   str = "2024-12"
 
 # ── PCE category lists ────────────────────────────────────────────────────────
 # These lists use the exact PCE_category strings that appear in the BEA PCE

@@ -1,0 +1,421 @@
+naics6,bea_io,bea_desc,match_prefix,match_len
+111110,111CA,Farms,11111,5
+111120,111CA,Farms,11112,5
+111130,111CA,Farms,11113,5
+111140,111CA,Farms,11114,5
+111150,111CA,Farms,11115,5
+111160,111CA,Farms,11116,5
+111199,111CA,Farms,11119,5
+111211,111CA,Farms,1112,4
+111219,111CA,Farms,1112,4
+111310,111CA,Farms,1113,4
+111320,111CA,Farms,1113,4
+111331,111CA,Farms,1113,4
+111332,111CA,Farms,1113,4
+111333,111CA,Farms,1113,4
+111334,111CA,Farms,1113,4
+111335,111CA,Farms,1113,4
+111339,111CA,Farms,1113,4
+111411,111CA,Farms,1114,4
+111419,111CA,Farms,1114,4
+111421,111CA,Farms,1114,4
+111422,111CA,Farms,1114,4
+111910,111CA,Farms,1119,4
+111920,111CA,Farms,1119,4
+111930,111CA,Farms,1119,4
+111940,111CA,Farms,1119,4
+111991,111CA,Farms,1119,4
+111992,111CA,Farms,1119,4
+111998,111CA,Farms,1119,4
+11211X,111CA,Farms,11211,5
+112210,111CA,Farms,1122,4
+1123XX,111CA,Farms,1123,4
+112410,111CA,Farms,1124,4
+112420,111CA,Farms,1124,4
+112511,111CA,Farms,1125,4
+112512,111CA,Farms,1125,4
+112910,111CA,Farms,1129,4
+112920,111CA,Farms,1129,4
+112930,111CA,Farms,1129,4
+112990,111CA,Farms,1129,4
+113210,113FF,"Forestry, fishing, and related activities",113,3
+113310,113FF,"Forestry, fishing, and related activities",113,3
+114111,113FF,"Forestry, fishing, and related activities",114,3
+114112,113FF,"Forestry, fishing, and related activities",114,3
+114119,113FF,"Forestry, fishing, and related activities",114,3
+115114,113FF,"Forestry, fishing, and related activities",115,3
+115210,113FF,"Forestry, fishing, and related activities",115,3
+211120,211,Oil and gas extraction,211,3
+211130,211,Oil and gas extraction,211,3
+212111,212,"Mining, except oil and gas",2121,4
+212112,212,"Mining, except oil and gas",2121,4
+212113,212,"Mining, except oil and gas",2121,4
+212114,212,"Mining, except oil and gas",2121,4
+212115,212,"Mining, except oil and gas",2121,4
+212210,212,"Mining, except oil and gas",21221,5
+212220,212,"Mining, except oil and gas",21222,5
+212221,212,"Mining, except oil and gas",21222,5
+212222,212,"Mining, except oil and gas",21222,5
+212230,212,"Mining, except oil and gas",21223,5
+212290,212,"Mining, except oil and gas",21229,5
+212291,212,"Mining, except oil and gas",21229,5
+212299,212,"Mining, except oil and gas",21229,5
+212311,212,"Mining, except oil and gas",21231,5
+212312,212,"Mining, except oil and gas",21231,5
+212319,212,"Mining, except oil and gas",21231,5
+212321,212,"Mining, except oil and gas",21232,5
+212322,212,"Mining, except oil and gas",21232,5
+212323,212,"Mining, except oil and gas",21232,5
+212324,212,"Mining, except oil and gas",21232,5
+212325,212,"Mining, except oil and gas",21232,5
+212390,212,"Mining, except oil and gas",21239,5
+212391,212,"Mining, except oil and gas",21239,5
+212392,212,"Mining, except oil and gas",21239,5
+212393,212,"Mining, except oil and gas",21239,5
+212399,212,"Mining, except oil and gas",21239,5
+311111,311FT,Food and beverage and tobacco products,311111,6
+311119,311FT,Food and beverage and tobacco products,311119,6
+311211,311FT,Food and beverage and tobacco products,31121,5
+311212,311FT,Food and beverage and tobacco products,31121,5
+311213,311FT,Food and beverage and tobacco products,31121,5
+311221,311FT,Food and beverage and tobacco products,311221,6
+311224,311FT,Food and beverage and tobacco products,311224,6
+311225,311FT,Food and beverage and tobacco products,311225,6
+311230,311FT,Food and beverage and tobacco products,31123,5
+31131X,311FT,Food and beverage and tobacco products,3113,4
+311340,311FT,Food and beverage and tobacco products,3113,4
+31135X,311FT,Food and beverage and tobacco products,3113,4
+311411,311FT,Food and beverage and tobacco products,31141,5
+311412,311FT,Food and beverage and tobacco products,31141,5
+311421,311FT,Food and beverage and tobacco products,31142,5
+311422,311FT,Food and beverage and tobacco products,31142,5
+311423,311FT,Food and beverage and tobacco products,31142,5
+311511,311FT,Food and beverage and tobacco products,311511,6
+311512,311FT,Food and beverage and tobacco products,311512,6
+311513,311FT,Food and beverage and tobacco products,311513,6
+311514,311FT,Food and beverage and tobacco products,311514,6
+311520,311FT,Food and beverage and tobacco products,31152,5
+311611,311FT,Food and beverage and tobacco products,311611,6
+311612,311FT,Food and beverage and tobacco products,311612,6
+311613,311FT,Food and beverage and tobacco products,311613,6
+311615,311FT,Food and beverage and tobacco products,311615,6
+311710,311FT,Food and beverage and tobacco products,3117,4
+31181X,311FT,Food and beverage and tobacco products,31181,5
+311824,311FT,Food and beverage and tobacco products,31182,5
+311911,311FT,Food and beverage and tobacco products,31191,5
+311919,311FT,Food and beverage and tobacco products,31191,5
+311920,311FT,Food and beverage and tobacco products,31192,5
+311930,311FT,Food and beverage and tobacco products,31193,5
+311941,311FT,Food and beverage and tobacco products,31194,5
+311942,311FT,Food and beverage and tobacco products,31194,5
+311991,311FT,Food and beverage and tobacco products,31199,5
+311999,311FT,Food and beverage and tobacco products,31199,5
+312111,311FT,Food and beverage and tobacco products,31211,5
+312112,311FT,Food and beverage and tobacco products,31211,5
+312113,311FT,Food and beverage and tobacco products,31211,5
+312120,311FT,Food and beverage and tobacco products,31212,5
+312130,311FT,Food and beverage and tobacco products,31213,5
+312140,311FT,Food and beverage and tobacco products,31214,5
+312230,311FT,Food and beverage and tobacco products,3122,4
+313110,313TT,Textile mills and textile product mills,3131,4
+313210,313TT,Textile mills and textile product mills,3132,4
+313220,313TT,Textile mills and textile product mills,3132,4
+313230,313TT,Textile mills and textile product mills,3132,4
+313240,313TT,Textile mills and textile product mills,3132,4
+313320,313TT,Textile mills and textile product mills,3133,4
+314110,313TT,Textile mills and textile product mills,31411,5
+314120,313TT,Textile mills and textile product mills,31412,5
+314910,313TT,Textile mills and textile product mills,3149,4
+314994,313TT,Textile mills and textile product mills,3149,4
+314999,313TT,Textile mills and textile product mills,3149,4
+315110,315AL,Apparel and leather and allied products,315,3
+315120,315AL,Apparel and leather and allied products,315,3
+315190,315AL,Apparel and leather and allied products,315,3
+315220,315AL,Apparel and leather and allied products,315,3
+315240,315AL,Apparel and leather and allied products,315,3
+315250,315AL,Apparel and leather and allied products,315,3
+315280,315AL,Apparel and leather and allied products,315,3
+315990,315AL,Apparel and leather and allied products,315,3
+316110,315AL,Apparel and leather and allied products,316,3
+316210,315AL,Apparel and leather and allied products,316,3
+316990,315AL,Apparel and leather and allied products,316,3
+316992,315AL,Apparel and leather and allied products,316,3
+316998,315AL,Apparel and leather and allied products,316,3
+321113,321,Wood products,3211,4
+321114,321,Wood products,3211,4
+321211,321,Wood products,3212,4
+321212,321,Wood products,3212,4
+321213,321,Wood products,3212,4
+321214,321,Wood products,3212,4
+321215,321,Wood products,3212,4
+321219,321,Wood products,3212,4
+321911,321,Wood products,32191,5
+321912,321,Wood products,32191,5
+321918,321,Wood products,32191,5
+321920,321,Wood products,32192,5
+321991,321,Wood products,32199,5
+321992,321,Wood products,32199,5
+321999,321,Wood products,32199,5
+322110,322,Paper products,32211,5
+322120,322,Paper products,32212,5
+322121,322,Paper products,32212,5
+322122,322,Paper products,32212,5
+322130,322,Paper products,32213,5
+322211,322,Paper products,32221,5
+322212,322,Paper products,32221,5
+322219,322,Paper products,32221,5
+322220,322,Paper products,32222,5
+322230,322,Paper products,32223,5
+322291,322,Paper products,322291,6
+322299,322,Paper products,322299,6
+323111,323,Printing and related support activities,32311,5
+323117,323,Printing and related support activities,32311,5
+323120,323,Printing and related support activities,32312,5
+324110,324,Petroleum and coal products,32411,5
+324121,324,Petroleum and coal products,324121,6
+324122,324,Petroleum and coal products,324122,6
+324191,324,Petroleum and coal products,32419,5
+324199,324,Petroleum and coal products,32419,5
+325110,325,Chemical products,32511,5
+325120,325,Chemical products,32512,5
+325130,325,Chemical products,32513,5
+325180,325,Chemical products,32518,5
+325193,325,Chemical products,32519,5
+325194,325,Chemical products,32519,5
+325199,325,Chemical products,32519,5
+325211,325,Chemical products,325211,6
+325212,325,Chemical products,325212,6
+325220,325,Chemical products,32522,5
+325311,325,Chemical products,32531,5
+325312,325,Chemical products,32531,5
+325320,325,Chemical products,32532,5
+325411,325,Chemical products,325411,6
+325412,325,Chemical products,325412,6
+325413,325,Chemical products,325413,6
+325414,325,Chemical products,325414,6
+325510,325,Chemical products,32551,5
+325520,325,Chemical products,32552,5
+325611,325,Chemical products,32561,5
+325612,325,Chemical products,32561,5
+325613,325,Chemical products,32561,5
+325620,325,Chemical products,32562,5
+325910,325,Chemical products,32591,5
+325920,325,Chemical products,32592,5
+325992,325,Chemical products,32599,5
+325998,325,Chemical products,32599,5
+326111,326,Plastics and rubber products,32611,5
+326113,326,Plastics and rubber products,32611,5
+326121,326,Plastics and rubber products,32612,5
+326122,326,Plastics and rubber products,32612,5
+326140,326,Plastics and rubber products,32614,5
+326150,326,Plastics and rubber products,32615,5
+326160,326,Plastics and rubber products,32616,5
+326191,326,Plastics and rubber products,32619,5
+326199,326,Plastics and rubber products,32619,5
+326211,326,Plastics and rubber products,32621,5
+326212,326,Plastics and rubber products,32621,5
+326220,326,Plastics and rubber products,32622,5
+326291,326,Plastics and rubber products,32629,5
+326299,326,Plastics and rubber products,32629,5
+327110,327,Nonmetallic mineral products,3271,4
+327120,327,Nonmetallic mineral products,3271,4
+327211,327,Nonmetallic mineral products,3272,4
+327212,327,Nonmetallic mineral products,3272,4
+327213,327,Nonmetallic mineral products,3272,4
+327215,327,Nonmetallic mineral products,3272,4
+327310,327,Nonmetallic mineral products,32731,5
+327320,327,Nonmetallic mineral products,32732,5
+327331,327,Nonmetallic mineral products,32733,5
+327332,327,Nonmetallic mineral products,32733,5
+327390,327,Nonmetallic mineral products,32739,5
+327410,327,Nonmetallic mineral products,3274,4
+327420,327,Nonmetallic mineral products,3274,4
+327910,327,Nonmetallic mineral products,32791,5
+327991,327,Nonmetallic mineral products,327991,6
+327992,327,Nonmetallic mineral products,327992,6
+327993,327,Nonmetallic mineral products,327993,6
+327999,327,Nonmetallic mineral products,327999,6
+331110,331,Primary metals,3311,4
+331210,331,Primary metals,3312,4
+331221,331,Primary metals,3312,4
+331222,331,Primary metals,3312,4
+331313,331,Primary metals,331313,6
+331314,331,Primary metals,331314,6
+331315,331,Primary metals,331315,6
+331318,331,Primary metals,331318,6
+331410,331,Primary metals,331410,6
+331420,331,Primary metals,33142,5
+331491,331,Primary metals,33149,5
+331492,331,Primary metals,33149,5
+331511,331,Primary metals,33151,5
+331512,331,Primary metals,33151,5
+331513,331,Primary metals,33151,5
+331523,331,Primary metals,33152,5
+331529,331,Primary metals,33152,5
+332111,332,Fabricated metal products,332111,6
+332112,332,Fabricated metal products,332112,6
+332119,332,Fabricated metal products,332119,6
+332215,332,Fabricated metal products,3322,4
+332216,332,Fabricated metal products,3322,4
+332311,332,Fabricated metal products,33231,5
+332312,332,Fabricated metal products,33231,5
+332313,332,Fabricated metal products,33231,5
+332321,332,Fabricated metal products,33232,5
+332322,332,Fabricated metal products,33232,5
+332323,332,Fabricated metal products,33232,5
+332410,332,Fabricated metal products,33241,5
+332420,332,Fabricated metal products,33242,5
+332431,332,Fabricated metal products,33243,5
+332439,332,Fabricated metal products,33243,5
+332510,332,Fabricated metal products,3325,4
+332613,332,Fabricated metal products,3326,4
+332618,332,Fabricated metal products,3326,4
+332721,332,Fabricated metal products,33272,5
+332722,332,Fabricated metal products,33272,5
+332911,332,Fabricated metal products,332911,6
+332912,332,Fabricated metal products,332912,6
+332913,332,Fabricated metal products,332913,6
+332919,332,Fabricated metal products,332919,6
+332991,332,Fabricated metal products,332991,6
+332992,332,Fabricated metal products,332992,6
+332993,332,Fabricated metal products,332993,6
+332994,332,Fabricated metal products,332994,6
+332996,332,Fabricated metal products,332996,6
+332999,332,Fabricated metal products,332999,6
+333111,333,Machinery,333111,6
+333112,333,Machinery,333112,6
+333120,333,Machinery,33312,5
+333131,333,Machinery,33313,5
+333132,333,Machinery,33313,5
+333241,333,Machinery,333241,6
+333242,333,Machinery,333242,6
+333243,333,Machinery,333243,6
+333244,333,Machinery,333244,6
+333249,333,Machinery,333249,6
+333314,333,Machinery,333314,6
+333316,333,Machinery,333316,6
+333318,333,Machinery,333318,6
+333413,333,Machinery,333413,6
+333414,333,Machinery,333414,6
+333415,333,Machinery,333415,6
+333511,333,Machinery,333511,6
+333514,333,Machinery,333514,6
+333515,333,Machinery,333515,6
+333517,333,Machinery,333517,6
+333519,333,Machinery,333519,6
+333611,333,Machinery,333611,6
+333612,333,Machinery,333612,6
+333613,333,Machinery,333613,6
+333618,333,Machinery,333618,6
+333912,333,Machinery,333912,6
+333914,333,Machinery,333914,6
+333921,333,Machinery,33392,5
+333922,333,Machinery,33392,5
+333923,333,Machinery,33392,5
+333924,333,Machinery,33392,5
+333991,333,Machinery,333991,6
+333992,333,Machinery,333992,6
+333993,333,Machinery,333993,6
+333994,333,Machinery,333994,6
+333995,333,Machinery,333995,6
+333996,333,Machinery,333996,6
+333997,333,Machinery,333997,6
+333999,333,Machinery,333999,6
+334111,334,Computer and electronic products,334111,6
+334112,334,Computer and electronic products,334112,6
+334118,334,Computer and electronic products,334118,6
+334210,334,Computer and electronic products,33421,5
+334220,334,Computer and electronic products,33422,5
+334290,334,Computer and electronic products,33429,5
+334310,334,Computer and electronic products,3343,4
+334412,334,Computer and electronic products,334412,6
+334413,334,Computer and electronic products,334413,6
+334416,334,Computer and electronic products,334416,6
+334417,334,Computer and electronic products,334417,6
+334418,334,Computer and electronic products,334418,6
+334419,334,Computer and electronic products,334419,6
+334510,334,Computer and electronic products,334510,6
+334511,334,Computer and electronic products,334511,6
+334512,334,Computer and electronic products,334512,6
+334513,334,Computer and electronic products,334513,6
+334514,334,Computer and electronic products,334514,6
+334515,334,Computer and electronic products,334515,6
+334516,334,Computer and electronic products,334516,6
+334517,334,Computer and electronic products,334517,6
+334519,334,Computer and electronic products,334519,6
+334610,334,Computer and electronic products,33461,5
+334613,334,Computer and electronic products,33461,5
+334614,334,Computer and electronic products,33461,5
+335110,335,"Electrical equipment, appliances, and components",33511,5
+335121,335,"Electrical equipment, appliances, and components",33512,5
+335122,335,"Electrical equipment, appliances, and components",33512,5
+335129,335,"Electrical equipment, appliances, and components",33512,5
+335210,335,"Electrical equipment, appliances, and components",33521,5
+335220,335,"Electrical equipment, appliances, and components",335220,6
+335311,335,"Electrical equipment, appliances, and components",335311,6
+335312,335,"Electrical equipment, appliances, and components",335312,6
+335313,335,"Electrical equipment, appliances, and components",335313,6
+335314,335,"Electrical equipment, appliances, and components",335314,6
+335911,335,"Electrical equipment, appliances, and components",335911,6
+335912,335,"Electrical equipment, appliances, and components",335912,6
+335921,335,"Electrical equipment, appliances, and components",33592,5
+335929,335,"Electrical equipment, appliances, and components",33592,5
+335931,335,"Electrical equipment, appliances, and components",33593,5
+335932,335,"Electrical equipment, appliances, and components",33593,5
+335991,335,"Electrical equipment, appliances, and components",335991,6
+335999,335,"Electrical equipment, appliances, and components",335999,6
+336111,3361MV,"Motor vehicles, bodies and trailers, and parts",336111,6
+336112,3361MV,"Motor vehicles, bodies and trailers, and parts",336112,6
+336120,3361MV,"Motor vehicles, bodies and trailers, and parts",33612,5
+336211,3361MV,"Motor vehicles, bodies and trailers, and parts",336211,6
+336212,3361MV,"Motor vehicles, bodies and trailers, and parts",336212,6
+336213,3361MV,"Motor vehicles, bodies and trailers, and parts",336213,6
+336214,3361MV,"Motor vehicles, bodies and trailers, and parts",336214,6
+336310,3361MV,"Motor vehicles, bodies and trailers, and parts",33631,5
+336320,3361MV,"Motor vehicles, bodies and trailers, and parts",33632,5
+336330,3361MV,"Motor vehicles, bodies and trailers, and parts",33633,5
+336340,3361MV,"Motor vehicles, bodies and trailers, and parts",33634,5
+336350,3361MV,"Motor vehicles, bodies and trailers, and parts",33635,5
+336360,3361MV,"Motor vehicles, bodies and trailers, and parts",33636,5
+336370,3361MV,"Motor vehicles, bodies and trailers, and parts",33637,5
+336390,3361MV,"Motor vehicles, bodies and trailers, and parts",33639,5
+336411,3364OT,Other transportation equipment,336411,6
+336412,3364OT,Other transportation equipment,336412,6
+336413,3364OT,Other transportation equipment,336413,6
+336414,3364OT,Other transportation equipment,336414,6
+336415,3364OT,Other transportation equipment,336415,6
+336419,3364OT,Other transportation equipment,336419,6
+336510,3364OT,Other transportation equipment,3365,4
+336611,3364OT,Other transportation equipment,336611,6
+336612,3364OT,Other transportation equipment,336612,6
+336991,3364OT,Other transportation equipment,336991,6
+336992,3364OT,Other transportation equipment,336992,6
+336999,3364OT,Other transportation equipment,336999,6
+337110,337,Furniture and related products,33711,5
+337121,337,Furniture and related products,337121,6
+337122,337,Furniture and related products,337122,6
+337124,337,Furniture and related products,337124,6
+337125,337,Furniture and related products,337125,6
+337127,337,Furniture and related products,337127,6
+337211,337,Furniture and related products,337211,6
+337212,337,Furniture and related products,337212,6
+337214,337,Furniture and related products,337214,6
+337215,337,Furniture and related products,337215,6
+337910,337,Furniture and related products,3379,4
+337920,337,Furniture and related products,3379,4
+339112,339,Miscellaneous manufacturing,339112,6
+339113,339,Miscellaneous manufacturing,339113,6
+339114,339,Miscellaneous manufacturing,339114,6
+339115,339,Miscellaneous manufacturing,339115,6
+339116,339,Miscellaneous manufacturing,339116,6
+339910,339,Miscellaneous manufacturing,33991,5
+339920,339,Miscellaneous manufacturing,33992,5
+339930,339,Miscellaneous manufacturing,33993,5
+339940,339,Miscellaneous manufacturing,33994,5
+339950,339,Miscellaneous manufacturing,33995,5
+339991,339,Miscellaneous manufacturing,33999,5
+339992,339,Miscellaneous manufacturing,33999,5
+339993,339,Miscellaneous manufacturing,33999,5
+339994,339,Miscellaneous manufacturing,33999,5
+339995,339,Miscellaneous manufacturing,33999,5
+339999,339,Miscellaneous manufacturing,33999,5
