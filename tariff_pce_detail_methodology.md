@@ -4,7 +4,7 @@
 
 This document describes the **detail pipeline**, which uses BEA's 402-commodity benchmark-year IO tables to compute the predicted effect of tariff changes on PCE prices. The methodology is identical in algebra to the summary pipeline (see [tariff_pce_methodology.md](tariff_pce_methodology.md)) but operates at roughly 6× higher commodity resolution. The summary pipeline uses 71 summary-level industries accessible via the BEA API; the detail pipeline uses 402 commodity codes available only as Excel downloads from BEA's static file archives.
 
-The primary motivation for the detail pipeline is to resolve **aggregation bias** in the summary tables. At the summary level, "Motor vehicles, bodies and trailers, and parts" (code `3361MV`) is a single industry combining finished vehicle assembly, body manufacturing, and parts. This bundling inflates the total import content of the final vehicle category — the summary pipeline estimates 80.4% total import content for motor vehicles, while the detail pipeline separates automobile manufacturing (96.8%) from light trucks (67.3%) and heavy trucks (67.9%), each routed through different PCE categories with different weights. The aggregate core goods predicted effect is correspondingly affected: the detail pipeline yields **2.2%** compared to the summary pipeline's **2.4%**.
+The primary motivation for the detail pipeline is to resolve **aggregation bias** in the summary tables. The aggregate core goods predicted effect is correspondingly affected: the detail pipeline yields **2.2%** compared to the summary pipeline's **2.4%**.
 
 The approach follows the same literature: Minton and Somale (2025, Federal Reserve FEDS Note), Barbiero and Stein (2025, Boston Fed), and The Budget Lab at Yale. TBL and the Boston Fed both use detail-level IO tables.
 
@@ -80,11 +80,13 @@ The aggregation formula is identical to the summary pipeline:
 
 ### Case 1 — Constant Dollar Markup
 
-$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot \text{producers\_value}_{jk}}{\sum_j \text{purchasers\_value}_{jk}}$$
+$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PV_{jk}}{\sum_j PUV_{jk}}$$
+
+where $PV$ = producers' value and $PUV$ = purchasers' value.
 
 ### Case 2 — Constant Percent Markup
 
-$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot \text{purchasers\_value}_{jk}}{\sum_j \text{purchasers\_value}_{jk}}$$
+$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PUV_{jk}}{\sum_j PUV_{jk}}$$
 
 The key difference from the summary pipeline is the **granularity of the bridge**. At the summary level, the PCE bridge maps ~71 industries to ~150 entries; at the detail level, it maps ~402 commodities to ~704 entries across ~212 PCE categories. This means a single summary PCE category like "New motor vehicles" — which at the summary level receives a single predicted effect from the bundled `3361MV` industry — now receives contributions from multiple detail commodities:
 
@@ -100,7 +102,7 @@ These detail categories are then aggregated to the summary "New motor vehicles" 
 
 The detail PCE bridge produces ~212 categories, but the counterfactual inflation analysis (Step 7) and the NIPA price index data use the 27 summary-level core goods categories defined in `config.py`. We therefore aggregate the detail-level predicted effects to summary categories using a mapping (`DETAIL_TO_SUMMARY_PCE` in `pipeline_detail.py`), weighted by purchasers' value:
 
-$$\hat{P}_K = \frac{\sum_{k \in K} \hat{P}_k \cdot \text{purchasers\_value}_k}{\sum_{k \in K} \text{purchasers\_value}_k}$$
+$$\hat{P}_K = \frac{\sum_{k \in K} \hat{P}_k \cdot PUV_k}{\sum_{k \in K} PUV_k}$$
 
 where $K$ is the set of detail categories that roll up to summary category $K$.
 

@@ -56,15 +56,17 @@ The BEA PCE Bridge table maps each BEA commodity $j$ to one or more PCE consumpt
 
 ### Case 1 — Constant Dollar Markup
 
-$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot \text{producers\_value}_{jk}}{\sum_j \text{purchasers\_value}_{jk}}$$
+$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PV_{jk}}{\sum_j PUV_{jk}}$$
+
+where $PV$ = producers' value and $PUV$ = purchasers' value.
 
 Under this assumption, retailers and wholesalers add a fixed dollar margin that does not respond to the tariff. If a good costs \$80 at producer prices with a \$20 retail margin, and a tariff raises the producer price by \$8 (10%), the consumer price rises by \$8 to \$108 — the \$20 margin is unchanged. The tariff effect as a share of the consumer price is \$8/\$100 = 8%, which is less than 10% because the fixed margin dilutes it. Weighting by **producers' value** in the numerator correctly captures only the tariff-exposed portion of consumer spending. This is the assumption used by Minton and Somale (2025) and is considered the conservative baseline.
 
 ### Case 2 — Constant Percent Markup
 
-$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot \text{purchasers\_value}_{jk}}{\sum_j \text{purchasers\_value}_{jk}} = \sum_j \hat{p}_j \cdot w_{jk}$$
+$$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PUV_{jk}}{\sum_j PUV_{jk}} = \sum_j \hat{p}_j \cdot w_{jk}$$
 
-where $w_{jk} = \text{purchasers\_value}_{jk} / \sum_j \text{purchasers\_value}_{jk}$ are expenditure shares. Under this assumption, retailers maintain a fixed percentage margin. If the retailer maintains a 25% markup, a 10% rise in producer price passes through fully as a 10% rise in consumer price — the margin scales up proportionally. Weighting by **purchasers' value** in the numerator is therefore appropriate, as the margins are carried along with the tariff shock. This assumption produces larger predicted price effects than the constant dollar case.
+where $w_{jk} = PUV_{jk} / \sum_j PUV_{jk}$ are expenditure shares. Under this assumption, retailers maintain a fixed percentage margin. If the retailer maintains a 25% markup, a 10% rise in producer price passes through fully as a 10% rise in consumer price — the margin scales up proportionally. Weighting by **purchasers' value** in the numerator is therefore appropriate, as the margins are carried along with the tariff shock. This assumption produces larger predicted price effects than the constant dollar case.
 
 The difference between the two cases is largest for categories with high distribution margins, such as food, apparel, and furniture, where retail and wholesale margins can account for 30–50% of purchasers' value. Empirically, Sangani (2024) argues that dollar markup adjustment is the more common firm behavior, supporting the constant dollar assumption.
 
@@ -173,14 +175,6 @@ where $\hat{P}_{\text{core goods}}$ is the spending-weighted average of predicte
 2. **No general equilibrium effects:** The counterfactual holds all non-tariff factors constant. It does not account for second-round effects such as wage responses, substitution away from imported goods, or monetary policy reactions.
 3. **Static weights:** Spending weights are fixed at 2022 values from the PCE bridge and do not update to reflect the 2025 consumption basket.
 4. **Services assumed unaffected:** Services PCE is treated as having zero direct tariff exposure. This is a simplification — some services use imported inputs — but is standard in the literature.
-
----
-
-## Comparison to the Yale Budget Lab
-
-The Yale Budget Lab (TBL) publishes a regularly updated tariff tracking report (*Tracking the Economic Effects of Tariffs*, February 2026) that uses the same core methodology — BEA Leontief inverse, direct import shares, PCE bridge aggregation — to construct a full pass-through predicted price effect for core goods and durable goods PCE. Their headline figure of **3.4 percentage points** of predicted core goods price inflation through November 2025 is the direct analog to our **3.0%** estimate. The difference is explained primarily by tariff window (their effective tariff rate window extends through November 2025, ours through July 2025) and data granularity (they use the 402-commodity BEA detail IO tables; we use the 71-industry summary tables accessible via the BEA API).
-
-The most informative point of comparison is the total import content shares produced by the Leontief step. TBL reports an aggregate total import content of **32.3%** for core goods and **19.1%** for the direct-only share, implying a Leontief amplification factor of roughly 1.7×. Our analysis produces a mean direct import share of 10.3% and mean total import content of 22.3%, also roughly a 2× amplification. At the individual category level, however, the differences are more pronounced: TBL reports motor vehicles at 25.8% direct and 42.2% total, while our estimates are 33.8% direct and 80.4% total. This discrepancy is almost certainly driven by the granularity difference — at the 71-industry summary level, the motor vehicles industry aggregates finished vehicles with many parts and components that at the 402-commodity detail level would appear as separate commodities with lower individual import shares. The summary-level treatment therefore overstates the import content of the final vehicle category by bundling in heavily imported components that the detail tables would assign to separate upstream rows. This is the primary quantitative limitation of using the API-accessible summary tables rather than the full detail IO tables, and it implies our category-level predicted effects should be interpreted with more caution than the aggregate core goods figure.
 
 ---
 

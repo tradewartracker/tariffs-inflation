@@ -5,7 +5,7 @@ Estimates the pass-through of import tariffs into U.S. consumer prices (PCE infl
 Two parallel pipelines are provided:
 
 - **Summary pipeline** (71 industries) — Uses BEA summary IO tables fetched via the API. Annual data available for 1997–2023. See [tariff_pce_methodology.md](tariff_pce_methodology.md).
-- **Detail pipeline** (402 commodities) — Uses BEA benchmark-year detail IO tables downloaded as Excel files. Available for 2017 only. Resolves aggregation bias present at the summary level and more closely mimics the work of [Yale Budget Lab](https://budgetlab.yale.edu/research/methodological-appendix-tracking-economic-effects-tariffs) and [Barbiero & Stein of the Boston Fed](https://www.bostonfed.org/publications/current-policy-perspectives/2025/the-impact-of-tariffs-on-inflation.aspx). See [tariff_pce_detail_methodology.md](tariff_pce_detail_methodology.md).
+- **Detail pipeline** (402 commodities) — Uses BEA benchmark-year detail IO tables downloaded as Excel files. Available for 2017 only. The detailed methodology document is [tariff_pce_detail_methodology.md](tariff_pce_detail_methodology.md). This approach Resolves aggregation bias present at the summary level and more closely mimics the work of [Yale Budget Lab](https://budgetlab.yale.edu/research/methodological-appendix-tracking-economic-effects-tariffs) and [Barbiero & Stein of the Boston Fed](https://www.bostonfed.org/publications/current-policy-perspectives/2025/the-impact-of-tariffs-on-inflation.aspx). 
 
 ---
 
