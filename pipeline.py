@@ -141,7 +141,7 @@ def step2_3_leontief(year: int, api_key: str, leontief_source: str = "computed")
 # ── Validation: compare computed L against BEA pre-computed Total Requirements ─
 
 def validate_leontief(year: int, api_key: str, industries: list, L: np.ndarray) -> dict:
-    """Fetch BEA TableID 260 (Commodity-by-Commodity Total Requirements) and
+    """Fetch BEA TableID 59 (Commodity-by-Commodity Total Requirements) and
     compare element-wise against the locally computed Leontief inverse L.
 
     Returns a dict with summary statistics and a DataFrame of the top discrepancies.

@@ -17,7 +17,7 @@ BEA_KEY: str = os.environ.get("BEA_KEY", "1B069F6A-DB45-4EBF-8324-2F4A83E223EF")
 IMPORTS_FILE: str = "data/imports/TOTALnaics-data-2025-12.parquet"
 
 # ── BEA IO tables ─────────────────────────────────────────────────────────────
-IO_YEAR: int = 2022          # Year of BEA Supply (Table 262) and Use (Table 259) tables
+IO_YEAR: int = 2024          # Year of BEA Supply (Table 262) and Use (Table 259) tables
 
 # ── Tariff rates ──────────────────────────────────────────────────────────────
 TARIFF_BASELINE_YEAR: int  = 2024       # Annual-average baseline (all 12 months pooled)
@@ -53,7 +53,7 @@ CONCORDANCE_FALLBACK_TO_MANUAL_UNMAPPED: bool = True
 #                 model including trade and transport margins.  Methodologically
 #                 closer to Yale Budget Lab.  A is still built from Table 259
 #                 (needed for the column-sum sanity check) but L is replaced.
-LEONTIEF_SOURCE: str = "computed"
+LEONTIEF_SOURCE: str = "bea"
 
 # ── Pass-through / markup assumption ─────────────────────────────────────────
 # Controls how the tariff effect is aggregated from producer to consumer prices
@@ -94,8 +94,8 @@ COUNTERFACTUAL_BASELINE_MONTH: str = "2024-12"
 #
 #   Example:  EXCESS_BASELINE_START=2015, EXCESS_BASELINE_END=2018
 #             → averages 2015, 2016, 2017, 2018 YoY rates (i.e. 2014→2018 data)
-EXCESS_BASELINE_START: int = 2024
-EXCESS_BASELINE_END:   int = 2024
+EXCESS_BASELINE_START: int = 2015
+EXCESS_BASELINE_END:   int = 2019
 
 # ── Excess-inflation current window ──────────────────────────────────────────
 # The growth window for the "current" period in the excess-inflation scatter
@@ -184,6 +184,19 @@ CORE_GOODS_CATEGORIES: list = DURABLE_GOODS_CATEGORIES + NONDURABLE_GOODS_CATEGO
 # 27 core goods categories.
 #
 # If BEA renames a T20404 line in a future data release, update the value here.
+# ── Detail IO tables (402-commodity) ──────────────────────────────────────
+# These settings control the detail-level pipeline (pipeline_detail.py).
+# Detail tables are only available for 2017 (BEA benchmark year).
+# Data files must be downloaded first via download_detail_data.py.
+
+DETAIL_IO_YEAR: int = 2017
+
+DETAIL_SUPPLY_FILE: str = "data/io_detail/Supply_2017_DET.xlsx"
+DETAIL_CXC_TR_FILE: str = "data/io_detail/CxC_TR_2017_PRO_DET.xlsx"
+DETAIL_PCE_BRIDGE_FILE: str = "data/io_detail/PCEBridge_Detail.xlsx"
+DETAIL_CONCORDANCE_FILE: str = "data/stuff/BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx"
+
+# ── NIPA T20404 crosswalk ─────────────────────────────────────────────────
 NIPA_CROSSWALK: dict = {
     "New motor vehicles":
         "New motor vehicles (55)",
