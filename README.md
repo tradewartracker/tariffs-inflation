@@ -117,8 +117,12 @@ Then open `code/parse-bea-io-detail.ipynb` or import and call the step functions
 ## Data
 
 - **Census import data** — Monthly imports and duties by 6-digit NAICS code. Downloaded and processed via `code/make-imports-naics-dataset.ipynb`, stored as a parquet file in `data/imports/`.
+
 - **BEA summary IO tables** — Fetched at runtime from the BEA API (Tables 259 and 262). Annual data for 1997–2023.
+
 - **BEA detail IO tables** — Downloaded once via `code/download_detail_data.py` into `data/io_detail/`. Benchmark year 2017 only. Includes Supply table, pre-computed Leontief inverse, and detail PCE bridge.
+
 - **BEA PCE Bridge** — Summary bridge fetched at runtime from the BEA website; detail bridge included in the detail data download.
+
 - **NAICS → BEA concordance** — For summary: `data/concordance/naics_to_bea_summary.csv`. For detail: `data/stuff/BEA-Industry-and-Commodity-Codes-and-NAICS-Concordance.xlsx`.
 
