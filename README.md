@@ -1,7 +1,7 @@
 # The effects of tariffs on inflation?
 
 <p float="left" align="middle">
-  <img src="../figures/tariff_vs_contribution_same_units.png" width="875" />
+  <img src="./figures/tariff_vs_contribution_same_units.png" width="875" />
 </p>
 
 An important question over the past year is the following: How much have tariffs contributed to inflation in 2025? Federal reserve officials and other economics commentators have made statements along the lines of ``50 to 70 basis points'' to core PCE. 
