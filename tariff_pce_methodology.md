@@ -4,8 +4,6 @@
 
 We compute the predicted effect of **changes** in import tariffs on Personal Consumption Expenditure (PCE) prices across consumption categories. The approach follows Minton and Somale (2025, Federal Reserve FEDS Note) and combines BEA Input-Output tables, import data, and a PCE bridge table to propagate tariff cost shocks through the full supply chain to consumer prices.
 
-Critically, the analysis uses the **change** in the effective tariff rate relative to a pre-tariff baseline — not the level of the tariff. Using the tariff level would only be appropriate starting from a zero-tariff baseline, which is never the case in practice. Many tariff rates have been in place for years and are already embedded in prices. The relevant question is how much prices change in response to a tariff **increase**.
-
 ---
 
 ## Step 1 — Direct Import Share per Commodity
@@ -60,6 +58,8 @@ $$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PV_{jk}}{\sum_j PUV_{jk}}$$
 
 where $PV$ = producers' value and $PUV$ = purchasers' value.
 
+This is our baseline. 
+
 Under this assumption, retailers and wholesalers add a fixed dollar margin that does not respond to the tariff. If a good costs \$80 at producer prices with a \$20 retail margin, and a tariff raises the producer price by \$8 (10%), the consumer price rises by \$8 to \$108 — the \$20 margin is unchanged. The tariff effect as a share of the consumer price is \$8/\$100 = 8%, which is less than 10% because the fixed margin dilutes it. Weighting by **producers' value** in the numerator correctly captures only the tariff-exposed portion of consumer spending. This is the assumption used by Minton and Somale (2025) and is considered the conservative baseline.
 
 ### Case 2 — Constant Percent Markup
@@ -68,7 +68,7 @@ $$\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PUV_{jk}}{\sum_j PUV_{jk}} = \sum_j \
 
 where $w_{jk} = PUV_{jk} / \sum_j PUV_{jk}$ are expenditure shares. Under this assumption, retailers maintain a fixed percentage margin. If the retailer maintains a 25% markup, a 10% rise in producer price passes through fully as a 10% rise in consumer price — the margin scales up proportionally. Weighting by **purchasers' value** in the numerator is therefore appropriate, as the margins are carried along with the tariff shock. This assumption produces larger predicted price effects than the constant dollar case.
 
-The difference between the two cases is largest for categories with high distribution margins, such as food, apparel, and furniture, where retail and wholesale margins can account for 30–50% of purchasers' value. Empirically, Sangani (2024) argues that dollar markup adjustment is the more common firm behavior, supporting the constant dollar assumption.
+The difference between the two cases is largest for categories with high distribution margins, such as food, apparel, and furniture, where retail and wholesale margins can account for 30–50% of purchasers' value. Empirically, Sangani (2024) argues that constant dollar markup adjustment is the more common firm behavior, supporting the constant dollar assumption.
 
 The result $\hat{P}_k$ is the **predicted percent increase in the price of PCE category $k$** attributable to the tariffs.
 
@@ -185,3 +185,5 @@ Minton, Robert, and Mariano Somale (2025). "Detecting Tariff Effects on Consumer
 The Budget Lab at Yale (2026). "Tracking the Economic Effects of Tariffs," February 18, 2026. https://budgetlab.yale.edu/research/tracking-economic-effects-tariffs
 
 The Budget Lab at Yale (2026). "Methodological Appendix for Tracking the Economic Effects of Tariffs," February 17, 2026. https://budgetlab.yale.edu/research/methodological-appendix-tracking-economic-effects-tariffs
+
+Sangani, Kunal (2024). "Pass-Through in Levels and the Incidence of Commodity Shocks." SSRN Working Paper 4574233. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4574233

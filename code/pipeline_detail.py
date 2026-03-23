@@ -341,6 +341,41 @@ DETAIL_TO_SUMMARY_PCE = {
     "Watches": "Jewelry and watches",
     "Window coverings": "Furniture and furnishings",
     "Women's and girls' clothing": "Women's and girls' clothing",
+    # Energy categories (detail → summary)
+    "Fuel oil": "Fuel oil and other fuels",
+    "Other fuels": "Fuel oil and other fuels",
+    "Gasoline and other motor fuel": "Motor vehicle fuels, lubricants, and fluids",
+    "Lubricants and fluids": "Motor vehicle fuels, lubricants, and fluids",
+    "Electricity": "Electricity",
+    "Natural gas": "Natural gas",
+    # Food categories (detail → summary)
+    "Cereals": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Bakery products": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Beef and veal": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Pork": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Other meats": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Poultry": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Fish and seafood": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Fresh milk": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Processed dairy products": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Eggs": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Fats and oils": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Fruit (fresh)": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Vegetables (fresh)": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Processed fruits and vegetables": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Sugar and sweets": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Food products, not elsewhere classified": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Coffee, tea, and other beverage materials": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Mineral waters, soft drinks, and vegetable juices": "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Spirits": "Alcoholic beverages purchased for off-premises consumption",
+    "Wine": "Alcoholic beverages purchased for off-premises consumption",
+    "Beer": "Alcoholic beverages purchased for off-premises consumption",
+    "Food produced and consumed on farms": "Food produced and consumed on farms",
+    "Meals at limited service eating places": "Purchased meals and beverages",
+    "Meals at other eating places": "Purchased meals and beverages",
+    "Meals at drinking places": "Purchased meals and beverages",
+    "Alcohol in purchased meals": "Purchased meals and beverages",
+    "Food furnished to employees (including military)": "Food furnished to employees",
 }
 
 
@@ -365,7 +400,7 @@ def aggregate_to_summary_pce(
     df["summary_category"] = df["PCE_category"].map(DETAIL_TO_SUMMARY_PCE)
 
     # Keep only rows that map to a summary category
-    mapped = df.dropna(subset=["summary_category"])
+    mapped = df.dropna(subset=["summary_category"]).copy()
 
     # Weighted aggregation: effect = Σ(effect_i × puv_i) / Σ(puv_i)
     mapped["effect_x_puv"] = mapped["predicted_effect"] * mapped["purchasers_value_total"]
