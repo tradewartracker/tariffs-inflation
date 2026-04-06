@@ -114,7 +114,9 @@ This repo: [`pipeline.py:step6_pce_effect()`](code/pipeline.py#L319) lines 364�
 | **Numerator weight** | Producers' value (constant dollar) or purchasers' value (constant percent) | Not used for per-category prediction — used only to map import content to PCE categories |
 | **Denominator** | Purchasers' value per PCE category | Total purchasers' value (for expenditure-weighted averaging) |
 | **Output** | Per-category predicted tariff effect: $\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PV_{jk}}{\sum_j PUV_{jk}}$ | Per-category import content share: $s_k = \frac{\sum_j \tilde{m}_j \cdot |PUV_{jk}|}{\sum_j |PUV_{jk}|}$ |
-| **Number of categories** | 27 core goods categories | 32 PCE goods categories |
+| **Number of categories** | 27 core goods (food and energy excluded in [`config.py`](code/config.py#L148)) | 32 total PCE goods defined, of which 5 are food/energy; core goods subset = 27 (same categories) |
+
+Both repos work with the same 27 core goods PCE categories. Yale defines all 32 goods categories (including food and energy) and filters at runtime via an `is_food_energy` flag; this repo defines the 27 core goods directly. A few items are classified differently between durable and nondurable (e.g., recreational books, luggage), but the overall core goods set is the same.
 
 This repo produces a **predicted price effect** for each PCE category — a number in percentage points. Yale produces an **import content weight** for each category — used to weight a price index, not as a prediction to compare against data.
 
