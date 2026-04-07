@@ -12,6 +12,8 @@ This repository estimates the pass-through of import tariffs into U.S. consumer 
 
 The key result is in the figure above: At the category level, the inflation that we have seen over the past year does **not** correlate with what would be predicted. The implication is that the inflation we have seen over the past year is **not** related to tariffs.  
 
+This result may seem surprising. In [Comparison with Budget Lab](comparison_with_yale_budget_lab.md) we compare and contrast our work with their analysis which has been a popular reference for tariffs being behind in inflation. 
+
 The content below provides an overview as to how the repository works.
 
 ---
@@ -20,7 +22,7 @@ Two parallel pipelines are provided:
 
 - **Summary pipeline** (71 industries) — Uses BEA summary IO tables fetched via the API. Annual data available for 1997–2023. See [tariff_pce_methodology.md](tariff_pce_methodology.md).
 
-- **Detail pipeline** (402 commodities) — Uses BEA benchmark-year detail IO tables downloaded as Excel files. Available for 2017 only. The detailed methodology document is [tariff_pce_detail_methodology.md](tariff_pce_detail_methodology.md). This approach deals with any aggregation bias that may present at the summary level and it more closely mimics the work of [Yale Budget Lab](https://budgetlab.yale.edu/research/methodological-appendix-tracking-economic-effects-tariffs) and [Barbiero & Stein of the Boston Fed](https://www.bostonfed.org/publications/current-policy-perspectives/2025/the-impact-of-tariffs-on-inflation.aspx). 
+- **Detail pipeline** (402 commodities) — Uses BEA benchmark-year detail IO tables downloaded as Excel files. Available for 2017 only. The detailed methodology document is [tariff_pce_detail_methodology.md](tariff_pce_detail_methodology.md). This approach deals with any aggregation bias that may present at the summary level and it more closely mimics the work of [Barbiero & Stein of the Boston Fed](https://www.bostonfed.org/publications/current-policy-perspectives/2025/the-impact-of-tariffs-on-inflation.aspx). 
 
 ---
 

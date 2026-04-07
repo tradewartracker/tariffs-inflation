@@ -6,7 +6,7 @@ This document describes the **detail pipeline**, which uses BEA's 402-commodity 
 
 The primary motivation for the detail pipeline is to resolve **aggregation bias** in the summary tables. The aggregate core goods predicted effect is correspondingly affected: the detail pipeline yields **2.2%** compared to the summary pipeline's **2.4%**.
 
-The approach follows the same literature: Minton and Somale (2025, Federal Reserve FEDS Note), Barbiero and Stein (2025, Boston Fed), and The Budget Lab at Yale. TBL and the Boston Fed both use detail-level IO tables.
+The approach follows the same literature: Minton and Somale (2025, Federal Reserve FEDS Note) and Barbiero and Stein (2025, Boston Fed). The Boston Fed also uses detail-level IO tables. The Budget Lab at Yale uses a related but distinct methodology — see [comparison_with_yale_budget_lab.md](comparison_with_yale_budget_lab.md) for a detailed discussion of the differences.
 
 ---
 
