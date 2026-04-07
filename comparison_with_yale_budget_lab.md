@@ -119,7 +119,7 @@ If tariffs are heterogeneous across goods, then categories with high import cont
 
 ---
 
-## 4. Issue 2: Model–Data Mismatch
+## 4. Implication 2: Model–Data Mismatch
 
 Even setting aside the predicted-side covariance problem above, the observed-side construction introduces its own issues.
 
