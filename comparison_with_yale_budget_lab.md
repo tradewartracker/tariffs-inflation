@@ -4,6 +4,26 @@ A step-by-step comparison of the tariff-to-inflation pipeline in this repository
 
 ---
 
+## Notation
+
+| Symbol | Definition |
+|---|---|
+| $i$ | BEA commodity index (IO level, ~71 summary industries) |
+| $k$ | PCE category index (27 core goods categories) |
+| $m_i$ | Direct import share of commodity $i$: imports / total supply |
+| $L_{ij}$ | Leontief total requirements matrix entry: total amount of commodity $i$ required (directly and indirectly) per dollar of commodity $j$ output |
+| $\tilde{m}_j = \sum_i m_i \cdot L_{ij}$ | Total import content of commodity $j$ (direct + all upstream tiers) |
+| $\Delta\tau_i$ | Change in effective tariff rate on commodity $i$: current period minus baseline |
+| $\hat{p}_j = \sum_i (m_i \cdot \Delta\tau_i) \cdot L_{ij}$ | Predicted producer price effect on commodity $j$ (this repo) |
+| $B_{ik}$ | PCE bridge weight: value of commodity $i$ in PCE category $k$ |
+| $\hat{P}_k$ | Predicted consumer price effect on PCE category $k$ (bridged from $\hat{p}_j$) |
+| $s_k$ | Import content share of PCE category $k$: bridge-weighted average of $\tilde{m}_j$ (Yale) |
+| $e_k$ | PCE expenditure share of category $k$ |
+
+Yale's code uses $R_{c,j}$ for the Leontief matrix and $c$ for commodity — these are equivalent to $L_{ij}$ and $i$ above.
+
+---
+
 ## 1. Input-Output Framework
 
 ### 1a. Import Shares
@@ -39,8 +59,8 @@ This repo: [`pipeline.py:step4_total_import_content()`](code/pipeline.py#L195) |
 
 | | This Repo | Yale Tracker |
 |---|---|---|
-| **Formula** | $\tilde{m}_j = \sum_i m_i \cdot L_{ij}$ (i.e., $m'L$) | $\text{total\_import}_c = \sum_j R_{c,j} \times m_j$ (i.e., $Rm$) |
-| **Interpretation** | Total import content embedded in one dollar of industry $j$'s output, via all upstream tiers | Same — total import content of commodity $c$ including supply-chain linkages |
+| **Formula** | $\tilde{m}_j = \sum_i m_i \cdot L_{ij}$ | Same: $\tilde{m}_j = \sum_i m_i \cdot L_{ij}$ (Yale writes this as $\sum_c R_{c,j} \times m_c$) |
+| **Interpretation** | Total import content embedded in one dollar of commodity $j$'s output, via all upstream tiers | Same |
 
 Same computation: the Leontief inverse propagates direct import shares through all tiers of the supply chain.
 
@@ -58,7 +78,13 @@ This repo: [`pipeline.py:step5_delta_tariff()`](code/pipeline.py#L256) + [`compu
 | **Current period** | Single month (default `2025-12`) | Varies; most recent available Census month |
 | **Concordance** | NAICS6 → BEA summary codes via `concordance.py` or external CSV crosswalk | NAICS → BEA via `naics_to_bea_crosswalk.csv` |
 
-Both compute $\Delta\tau = \tau_\text{current} - \tau_\text{baseline}$ per commodity, using actual duties collected (not statutory rates). The concordance mapping is similar but implemented independently.
+Both compute effective tariff rates per commodity using actual duties collected (not statutory rates). The concordance mapping is similar but implemented independently.
+
+**How the commodity-level tariff rates are used differs.** 
+
+- This repository keeps $\Delta\tau_i$ as a per-commodity vector throughout the pipeline — it enters the Leontief multiplication element-wise (Section 3). 
+
+- Yale computes commodity-level rates but then **collapses them to a single scalar** before the price effects calculation in Section 3. Specifically, they compute `tariff_increase_core` $= \overline{\Delta\tau} = \sum_i v_i \cdot \Delta\tau_i$, a customs-value-weighted average across all core goods commodities (where $v_i$ are customs-value weights).
 
 ---
 
@@ -80,26 +106,28 @@ Yale's tracker computes total import content via the Leontief (same as above):
 
 $$\tilde{m}_j = \sum_i m_i \cdot L_{ij}$$
 
-But then uses these as static weights for a price index. For the passthrough denominator — the predicted effect against which actual prices are compared — it multiplies a **single aggregate** $\Delta\tau$ by a **single aggregate** import share:
+And then uses these as static weights for a price index. For the predicted price effect it multiplies a **single scalar** $\Delta\tau$ by a single scalar import share:
 
 ```
-expected_core = tariff_increase * IMPORT_SHARE_CORE_GOODS
+expected_core = tariff_increase_core * IMPORT_SHARE_CORE_GOODS
 ```
 
-This is equivalent to: $\hat{p} = \Delta\tau \cdot \sum_i m_i \cdot L_{ij}$, i.e., the tariff rate is factored *outside* the sum. All commodities are treated as facing the same tariff rate.
+Here `tariff_increase_core` $= \overline{\Delta\tau} = \sum_i v_i \cdot \Delta\tau_i$ is a customs-value-weighted average of commodity-level tariff rates across core goods (see Section 2), and `IMPORT_SHARE_CORE_GOODS` $= \bar{s} = \sum_k e_k \cdot s_k$ is an expenditure-weighted average of per-category Leontief-derived import content (computed in `import_price_index.R`). Both are derived from commodity-level data. One difference relative to this repository is that both of these values are **collapsed to scalars** before multiplication:
+
+$$\hat{p}^{\text{Yale}} = \overline{\Delta\tau} \cdot \bar{s}$$
+
+And all cross-commodity variation in tariff rates is averaged away.
 
 ### Why the Distinction Matters
 
-If tariff rates were uniform across commodities, the two approaches would be identical — $\Delta\tau$ factors out. But 2025 tariff rates varied enormously: near-zero on pharmaceuticals, ~5% on some electronics, 25% on steel and autos, with different rates by country of origin. With this much cross-commodity variation, putting $\Delta\tau_i$ inside vs. outside the Leontief sum produces meaningfully different per-industry predictions. An industry that sources heavily from high-tariff inputs (steel-intensive manufacturing) gets a different prediction than one sourcing from low-tariff inputs (pharma ingredients), even if both have similar total import content.
+If tariff rates were uniform across commodities, the two approaches would be identical — $\Delta\tau$ factors out. But 2025 tariff rates varied enormously: near-zero on pharmaceuticals, ~5% on some electronics, 25% on steel and autos, with different rates by country of origin. So, Averaging import shares and tariff rates separately — rather than computing their product at the commodity level — introduces an upward bias in the predicted price effect. 
 
-### A Partial Exception
-
-Yale's tracker *does* use commodity-level tariff rates through the Leontief in one place: the **employment index**, where $w_j = \sum_c \tau_c \cdot R_{c,j} \cdot s_c$ — the same structure as this repo's price prediction. And their retrospective article (April 2026) states that the State of Tariffs report now runs "commodity-level ETR shocks through an input-output matrix," following Barbiero & Stein. But this commodity-level propagation is **not** used in their price passthrough calculation, which remains aggregate.
+Yale's tracker *does* use commodity-level tariff rates through the Leontief in one place: the **employment index**, where the exposure of industry $j$ is $\sum_i \Delta\tau_i \cdot L_{ij} \cdot m_i$ — the same structure as this repo's $\hat{p}_j$.  But this commodity-level propagation is **not** used in their price passthrough calculation, which remains aggregate.
 
 | | This Repo | Yale Tracker |
 |---|---|---|
-| **Tariff rates in Leontief** | Per-commodity $\Delta\tau_i$ inside the sum | Single aggregate $\Delta\tau$ outside the sum |
-| **Output** | Per-industry predicted price effect $\hat{p}_j$ | Per-industry import content weight $\tilde{m}_j$ (tariff-invariant) |
+| **Tariff rates in Leontief** | Per-commodity $\Delta\tau_i$ inside the sum: $\hat{p}_j = \sum_i (m_i \cdot \Delta\tau_i) \cdot L_{ij}$ | Collapsed to scalar outside the sum: $\hat{p}^{\text{Yale}} = \overline{\Delta\tau} \cdot \bar{s}$ |
+| **Output** | Per-commodity predicted price effect $\hat{p}_j$, bridged to per-category $\hat{P}_k$ | Single aggregate predicted price effect $\hat{p}^{\text{Yale}}$ |
 | **Sensitivity to tariff composition** | Yes — different tariff mixes produce different predictions | No — only the average rate matters |
 
 ---
@@ -113,14 +141,14 @@ This repo: [`pipeline.py:step6_pce_effect()`](code/pipeline.py#L319) lines 364�
 | **Bridge source** | BEA `PCEBridge_Summary.xlsx` (fetched at runtime, configurable year) | BEA `PCEBridge_Summary.xlsx` (static Excel, 2024) |
 | **Numerator weight** | Producers' value (constant dollar) or purchasers' value (constant percent) | Not used for per-category prediction — used only to map import content to PCE categories |
 | **Denominator** | Purchasers' value per PCE category | Total purchasers' value (for expenditure-weighted averaging) |
-| **Output** | Per-category predicted tariff effect: $\hat{P}_k = \frac{\sum_j \hat{p}_j \cdot PV_{jk}}{\sum_j PUV_{jk}}$ | Per-category import content share: $s_k = \frac{\sum_j \tilde{m}_j \cdot |PUV_{jk}|}{\sum_j |PUV_{jk}|}$ |
+| **Output** | Per-category predicted tariff effect: $\hat{P}_k = \frac{\sum_i \hat{p}_i \cdot B_{ik}}{\sum_i B_{ik}}$ (using producers' value for $B_{ik}$ numerator, purchasers' value denominator) | Per-category import content share: $s_k = \frac{\sum_i \tilde{m}_i \cdot |B_{ik}|}{\sum_i |B_{ik}|}$ (purchasers' value for $B_{ik}$) |
 | **Number of categories** | 27 core goods (food and energy excluded in [`config.py`](code/config.py#L148)) | 32 total PCE goods defined, of which 5 are food/energy; core goods subset = 27 (same categories) |
 
 Both repos work with the same 27 core goods PCE categories. Yale defines all 32 goods categories (including food and energy) and filters at runtime via an `is_food_energy` flag; this repo defines the 27 core goods directly. A few items are classified differently between durable and nondurable (e.g., recreational books, luggage), but the overall core goods set is the same.
 
 This repo produces a **predicted price effect** for each PCE category — a number in percentage points. Yale produces an **import content weight** for each category — used to weight a price index, not as a prediction to compare against data.
 
-Note a subtle difference in the bridge weighting: this repo (under constant dollar markup) uses producers' value $PV$ in the numerator and purchasers' value $PUV$ in the denominator, so distribution margins dilute the tariff effect. Yale uses purchasers' value in both numerator and denominator for $s_k$, which is equivalent to a constant-percent markup assumption for the purpose of computing import content shares.
+Note a subtle difference in the bridge weighting: this repo (under constant dollar markup) uses producers' value for $B_{ik}$ in the numerator and purchasers' value in the denominator, so distribution margins dilute the tariff effect. Yale uses purchasers' value for $B_{ik}$ in both numerator and denominator for $s_k$, which is equivalent to a constant-percent markup assumption for the purpose of computing import content shares.
 
 ---
 
@@ -139,39 +167,29 @@ Source: [`pipeline.py:step7_excess_inflation()`](code/pipeline.py#L826) + [`pars
 3. Fit a WLS regression. Under the hypothesis that the IO model is correct, the slope should be ~1 and R² should be positive.
 4. **Result**: The WLS slope is **-0.49** — not just zero, but negative. Categories with higher predicted tariff exposure actually tended to see *less* excess inflation than the model predicts. The relationship runs in the wrong direction.
 
-### Yale Tracker: Aggregate Imported Price Index
+### Yale Tracker: Aggregate Predicted Effect vs. Import-Weighted Price Index
 
 Source: [`import_price_index.R`](https://github.com/Budget-Lab-Yale/tariff-impact-tracker/blob/main/R/import_price_index.R) + [`report_setup.R`](https://github.com/Budget-Lab-Yale/tariff-impact-tracker/blob/main/R/report_setup.R) lines 880–960
 
-1. **Per-category import content share $s_k$** — from Section 1c (Leontief) + Section 4 (PCE bridge). Total import content $\tilde{m}_j$ from the Leontief is mapped to each PCE category $k$ via the bridge: $s_k = \sum_j \tilde{m}_j \cdot |PUV_{jk}| / \sum_j |PUV_{jk}|$ (purchasers'-value-weighted). This is a static weight — it does not depend on tariff rates. It measures how import-exposed category $k$ is.
+**Predicted side.** Sections 1–4 above culminate in a single aggregate predicted price effect:
 
-2. **Import-content-weighted price index** — $s_k$ is combined with nominal PCE expenditure $E_{k,t}$ (from Haver) and BEA price indices $P_{k,t}$ (from Haver) to construct a time-varying weighted index: $I_t = \sum_k w_{k,t} \cdot P_{k,t}$, where $w_{k,t} \propto s_k \cdot E_{k,t}$. Categories with higher import content get more weight. This index is *not* derived from the tariff rate pipeline — it uses only the import-content structure from the IO tables and observed prices from BEA/Haver.
+$$\hat{p}^{\text{Yale}} = \overline{\Delta\tau} \cdot \bar{s}$$
 
-3. **Deviation from trend** — estimate a pre-2025 trend for $I_t$ (local projection or log-linear) and measure how far the index has risen above it.
+where $\overline{\Delta\tau} = \sum_i v_i \cdot \Delta\tau_i$ (customs-value-weighted average tariff change, Section 2) and $\bar{s} = \sum_k e_k \cdot s_k$ (expenditure-weighted average import content, Section 4). This is one number — no per-commodity tariff variation survives to this point.
 
-4. **Expected price effect** — from Section 2, a **single aggregate** $\Delta\tau$ (latest effective tariff rate minus 2022–2024 baseline, for core goods or durables as a broad category) multiplied by a **single aggregate** import share $S$ (expenditure-weighted average of $s_k$ across categories): `expected = Δτ × S`. No per-commodity tariff variation enters here.
+**Observed side.** Yale constructs an import-content-weighted price index to measure how much prices actually moved in import-heavy categories:
 
-5. **Implied passthrough** = deviation from step 3 / expected effect from step 4.
+1. Use $s_k$ (per-category import content share, from Section 4) as a weight on observed BEA price indices $P_{k,t}$ (from Haver), combined with expenditure $e_k$: $I_t = \sum_k (s_k \cdot e_k) \cdot P_{k,t} / \sum_k (s_k \cdot e_k)$. Categories with higher import content get more weight. This index does not use tariff rates — it uses only the import-content structure from the IO tables and observed prices.
 
-6. **Result**: Passthrough ranges from 40–76% depending on the trend method. They interpret this as partial but meaningful tariff passthrough.
+2. Estimate a pre-2025 trend for $I_t$ (local projection or log-linear) and measure how far the index has risen above it.
 
-The key contrast: in this repo, $\hat{P}_k$ on the x-axis of the scatter carries commodity-specific tariff rates propagated through the Leontief (Section 3) — it is a per-category *prediction*. In Yale's tracker, $s_k$ is a tariff-invariant import-content weight, and tariff rates enter only as a single aggregate number in the denominator of the passthrough ratio. Yale never produces a per-category predicted price effect to compare against per-category actual inflation.
+**Comparison.** Implied passthrough = deviation of $I_t$ from trend / $\hat{p}^{\text{Yale}}$. Result: 40–76% depending on the trend method. They interpret this as partial but meaningful tariff passthrough.
 
----
-
-## 6. What Yale Does NOT Do
-
-Yale's tracker does not produce per-category predicted price effects and compare them to per-category observed price changes. The closest they come is reporting import-weighted vs. unweighted aggregate indices and noting that the import-weighted one rose more. But this is a weaker test than the cross-category regression in this repo, because:
-
-1. It collapses 27+ categories into a single number.
-2. It cannot identify whether the *right* categories are moving.
-3. It is sensitive to a few large categories (motor vehicles, electronics) that dominate the import-weighted index.
-
-Their retrospective article (April 2026) attributes the gap between prediction and reality to "incomplete passthrough" (40–76%). But incomplete passthrough is a **level** adjustment — it scales all predictions down proportionally. It cannot explain why the cross-category correlation is negative. If passthrough were 50% uniformly, the scatter plot slope would be 0.5, not -0.49.
+An important contrast with this repo: $\hat{P}_k$ carries commodity-specific $\Delta\tau_i$ propagated through the Leontif matrix $L_{ij}$ and is compared against **actual** inflation **category by category**. Yale's $\hat{p}^{\text{Yale}}$ is a single scalar compared against a single import-content-weighted "price" index, $I_t$. Yale never produces per-category predicted price effects to compare against per-category actual inflation.
 
 ---
 
-## 7. Summary of Shared vs. Different Elements
+## 6. Summary of Shared vs. Different Elements
 
 | Pipeline Step | Shared? | Notes |
 |---|---|---|
@@ -179,29 +197,9 @@ Their retrospective article (April 2026) attributes the gap between prediction a
 | Leontief inverse | Same | Both use BEA's pre-computed total requirements |
 | Tariff rates from Census | Same concept | Different source files (Census parquet vs. USITC Excel), same calculation |
 | NAICS → BEA concordance | Similar | Independent implementations, same mapping goal |
-| Tariff-weighted Leontief propagation | **Different** | This repo does it; Yale does not propagate $\Delta\tau_i$ through the Leontief |
+| Tariff-weighted Leontief propagation | **Different** | This repo computes $\hat{p}_j = \sum_i (m_i \cdot \Delta\tau_i) \cdot L_{ij}$; Yale collapses to $\hat{p}^{\text{Yale}} = \overline{\Delta\tau} \cdot \bar{s}$ |
 | PCE bridge | Same source | This repo produces per-category predictions; Yale produces per-category weights |
 | Comparison to data | **Fundamentally different** | Cross-category scatter vs. aggregate index ratio |
-| What gets tested | **Fundamentally different** | Pattern (relative ranking) vs. level (aggregate magnitude) |
-
----
-
-## 8. Reconciling the Results
-
-Yale's finding of 40–76% aggregate passthrough and this repo's finding of no cross-category correlation are **not contradictory**. They are measuring different things:
-
-- **Yale**: "Import-heavy goods as a group saw prices rise roughly 40–76% as much as the model predicted." This is consistent with general inflationary pressure during the tariff period that happened to affect import-heavy goods somewhat more, without the specific category-level pattern matching IO predictions.
-
-- **This repo**: "The specific categories the IO model predicts should be hardest-hit are not the categories that actually saw the most inflation." This is a test of whether the tariff → cost → price mechanism is operating at the product level, and it finds no evidence that it is.
-
-The gap between these findings raises the question: if the IO model doesn't get the category-level pattern right, what is driving the aggregate deviation in import-weighted prices? Possible explanations include:
-
-1. **Non-tariff supply shocks** correlated with import exposure (e.g., shipping disruptions, input shortages) that affect import-heavy categories without following the IO-predicted pattern.
-2. **Demand shifts** during the tariff period that happen to concentrate in goods-heavy (and therefore import-heavy) categories.
-3. **Anticipatory pricing** — firms raising prices broadly in import-exposed sectors regardless of their specific tariff exposure, as a hedge or expectation effect.
-4. **Aggregation masking** — a few large categories (motor vehicles, electronics) dominating the import-weighted index and driving the aggregate result.
-
-None of these are the IO mechanism working as theorized. The IO model's specific prediction is that cost pressure follows the supply chain: a tariff on steel should raise prices of steel-intensive goods more than non-steel-intensive goods, proportional to each good's total steel import content. This repo tests that prediction and does not find support for it.
 
 ---
 
