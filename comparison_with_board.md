@@ -1,6 +1,6 @@
 # Comparison with Fed Board FEDS Note Part II (Minton, Ray & Somale, April 2026)
 
-On the same day that we released our [note](), the Board of Governors released a similar note that reaches a somewhat different conclusion in the category-level cross section. Once we align our exercise to the Fed’s Figure A3 choices, we obtain a similar positive cross-sectional relationship, suggesting the main disagreement is not the construction of predicted tariff exposure per se, but rather the treatment of inflation timing, the baseline for “excess” inflation, and regression weighting.
+On the same day that we released our [note](https://www.minneapolisfed.org/article/2026/tariffs-cant-explain-rising-goods-inflation), the Board of Governors released a similar [note](https://www.federalreserve.gov/econres/notes/feds-notes/detecting-tariff-effects-on-consumer-prices-in-real-time-part-II-20260408.html) that reaches a somewhat different conclusion in the category-level cross section. Once we align our exercise to the Fed’s Figure A3 choices, we obtain a similar positive cross-sectional relationship, suggesting the main disagreement is not the construction of predicted tariff exposure per se, but rather the treatment of inflation timing, the baseline for “excess” inflation, and regression weighting.
 
 ## Focus
 
