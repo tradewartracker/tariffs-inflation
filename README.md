@@ -12,7 +12,7 @@ This repository estimates the pass-through of import tariffs into U.S. consumer 
 
 The key result is in the figure above: At the category level, the inflation that we have seen over the past year does **not** correlate with what would be predicted. The implication is that the inflation we have seen over the past year is **not** related to tariffs.  
 
-This result may seem surprising. In [Comparison with Budget Lab](comparison_with_yale_budget_lab.md) we compare and contrast our work with their analysis which has been a popular reference for tariffs being behind in inflation. 
+This result may seem surprising. In [Comparison with Budget Lab](comparison_with_yale_budget_lab.md) we compare and contrast our work with their analysis which has been a popular reference for tariffs being behind in inflation. In [Comparison with Fed Board](comparison_with_board.md) we discuss the differences with the FEDS Note Part II (Minton, Ray & Somale, April 2026) which reaches a somewhat different conclusion in the category-level cross section.
 
 The content below provides an overview as to how the repository works.
 
